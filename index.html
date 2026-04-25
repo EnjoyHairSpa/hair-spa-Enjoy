@@ -11,6 +11,10 @@
     
     <button id="viewSettings" class="view-settings">Display: Relaxed</button>
 
+    <div class="top-nav">
+        <button id="openAuth" class="auth-trigger-btn">Area Riservata</button>
+    </div>
+
     <div class="gateway-container">
         <div class="card" style="background-image: url('Singola.png');">
             <div class="overlay">
@@ -26,6 +30,23 @@
                 <p>Un programma continuo per la bellezza dei tuoi capelli.</p>
                 <a href="percorsi.html" class="main-btn">Componi il Percorso</a>
             </div>
+        </div>
+    </div>
+
+    <div id="authModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content card">
+            <span id="closeAuth" class="close-btn">&times;</span>
+            <h3>Benvenuta nel tuo Spazio</h3>
+            <p>Inserisci i tuoi dati per un'esperienza personalizzata</p>
+            
+            <input type="email" id="authEmail" placeholder="Email" class="auth-input">
+            <input type="password" id="authPassword" placeholder="Password" class="auth-input">
+            
+            <div class="auth-buttons">
+                <button id="btnLogin" class="main-btn">Accedi</button>
+                <button id="btnRegister" class="secondary-btn">Registrati</button>
+            </div>
+            <p id="authMessage" class="auth-message"></p>
         </div>
     </div>
 
