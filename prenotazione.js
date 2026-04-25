@@ -1,6 +1,9 @@
 const SUPABASE_URL = 'https://ashctxmmjrjgmakuzpjy.supabase.co'; 
-const SUPABASE_KEY = 'sb_publishable_eSsDyQAkrJZ_kiKnY27Idw_Fn6uQt2t'; // Assicurati sia corretta
+const SUPABASE_KEY = 'sb_publishable_eSsDyQAkrJZ_kiKnY27Idw_Fn6uQt2t'; 
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// --- CONFIGURAZIONE WHATSAPP ---
+const IL_TUO_NUMERO = "393XXXXXXXXX"; // <-- INSERISCI IL TUO NUMERO TRA LE VIRGOLETTE
 
 document.addEventListener('DOMContentLoaded', async () => {
     const container = document.getElementById('servizi-dinamici');
@@ -21,16 +24,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         .order('categoria', { ascending: true });
 
     if (errServizi) {
-        container.innerHTML = `<p style="color:red;">Errore nel caricamento: ${errServizi.message}</p>`;
+        container.innerHTML = `<p style="color:red;">Errore: ${errServizi.message}</p>`;
         return;
     }
 
     if (servizi) {
-        container.innerHTML = ""; // Pulizia caricamento
+        container.innerHTML = ""; 
         const categorie = [...new Set(servizi.map(s => s.categoria))];
 
         categorie.forEach(cat => {
-            // Creazione Accordion Item
             const wrapper = document.createElement('div');
             wrapper.className = 'accordion-item';
             
@@ -45,19 +47,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             content.style.display = "none";
             content.style.padding = "0 15px 15px";
 
-            // Filtraggio servizi per questa categoria
             servizi.filter(s => s.categoria === cat).forEach(s => {
                 const label = document.createElement('label');
                 label.className = 'radio-item';
-                // Il trucco: 'name' è uguale alla categoria per rendere la scelta esclusiva
                 label.innerHTML = `
                     <span style="color:#ccc; font-size:0.9rem;">${s.nome_servizio}</span>
-                    <input type="radio" name="${cat}" value="${s.nome_servizio}" data-id="${s.id}">
+                    <input type="radio" name="${cat}" value="${s.nome_servizio}">
                 `;
                 content.appendChild(label);
             });
 
-            // Logica apertura/chiusura
             title.onclick = () => {
                 const isHidden = content.style.display === "none";
                 content.style.display = isHidden ? "block" : "none";
@@ -75,37 +74,34 @@ document.addEventListener('DOMContentLoaded', async () => {
         e.preventDefault();
         const btn = document.getElementById('btnPrenota');
         btn.disabled = true;
-        msg.innerText = "ELABORAZIONE RITUALE...";
+        msg.innerText = "Sincronizzazione Rituale...";
         msg.style.color = "var(--gold)";
 
         const scelti = [];
-        
-        // Raccogliamo i radio button selezionati (uno per categoria)
         document.querySelectorAll('input[type="radio"]:checked').forEach(radio => {
-            scelti.push({ 
-                categoria: radio.name, 
-                servizio: radio.value 
-            });
+            scelti.push(radio.value); // Prendiamo solo il nome del servizio per il messaggio
         });
 
-        // Aggiungiamo la consulenza se selezionata
         const consulenzaCheck = document.getElementById('consulenza').checked;
+        const dataVal = document.getElementById('data').value;
+        const oraVal = document.getElementById('orario').value;
+        const noteVal = document.getElementById('note').value || "Nessuna nota particolare";
         
         if (scelti.length === 0 && !consulenzaCheck) {
-            msg.innerText = "SELEZIONA ALMENO UN SERVIZIO O LA CONSULENZA";
+            msg.innerText = "SELEZIONA ALMENO UN SERVIZIO";
             msg.style.color = "#ff4444";
             btn.disabled = false;
             return;
         }
 
-        // Preparazione dati per Supabase
+        // 4. Salva su Supabase
         const payload = {
             cliente_id: session.user.id,
             servizi_scelti: scelti,
             consulenza: consulenzaCheck,
-            data_appuntamento: document.getElementById('data').value,
-            ora_appuntamento: document.getElementById('orario').value,
-            note: document.getElementById('note').value,
+            data_appuntamento: dataVal,
+            ora_appuntamento: oraVal,
+            note: noteVal,
             tipo_prenotazione: 'singola'
         };
 
@@ -116,11 +112,26 @@ document.addEventListener('DOMContentLoaded', async () => {
             msg.style.color = "#ff4444";
             btn.disabled = false;
         } else {
-            msg.innerText = "RITUALE PRENOTATO CON SUCCESSO!";
-            msg.style.color = "var(--gold)";
+            msg.innerText = "RITUALE SALVATO! Apertura WhatsApp...";
+            
+            // 5. Generazione Messaggio WhatsApp
+            const listaServizi = scelti.join(', ') || "Nessuno (Solo consulenza)";
+            const testoWA = `✨ *NUOVA PRENOTAZIONE HAIR SPA* ✨%0A%0A` +
+                            `👤 *Cliente:* ${session.user.email}%0A` +
+                            `💇‍♂️ *Servizi:* ${listaServizi}%0A` +
+                            `🧪 *Consulenza:* ${consulenzaCheck ? "Sì" : "No"}%0A%0A` +
+                            `📅 *Data:* ${dataVal}%0A` +
+                            `⏰ *Ora:* ${oraVal}%0A%0A` +
+                            `📝 *Note:* _${noteVal}_%0A%0A` +
+                            `_Inviato dal portale Luxury Hair_`;
+
+            const linkWA = `https://wa.me/${IL_TUO_NUMERO}?text=${testoWA}`;
+
+            // Reindirizzamento doppio (Apre WA e torna alla Home)
             setTimeout(() => {
+                window.open(linkWA, '_blank');
                 window.location.href = "index.html";
-            }, 2500);
+            }, 1500);
         }
     };
 });
