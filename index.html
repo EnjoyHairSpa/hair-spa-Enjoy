@@ -36,16 +36,22 @@
         <div class="modal-content"> <span id="closeAuth" class="close-btn">&times;</span>
             
             <div class="modal-header">
-                <h3 class="modal-title">Benvenuta</h3>
+                <h3 class="modal-title" id="modalTitle">Benvenuta</h3>
                 <p class="modal-subtitle">In Enjoy</p>
             </div>
             
             <div class="auth-form-group">
+                <div id="registerFields" style="display: none; width: 100%;">
+                    <input type="text" id="authNome" placeholder="Nome" class="auth-input">
+                    <input type="text" id="authCognome" placeholder="Cognome" class="auth-input">
+                    <input type="tel" id="authTelefono" placeholder="Telefono" class="auth-input">
+                </div>
+
                 <input type="email" id="authEmail" placeholder="Email" class="auth-input">
                 <input type="password" id="authPassword" placeholder="Password" class="auth-input">
                 
-                <button id="btnLogin" class="main-btn">Accedi</button>
-                <button id="btnRegister" class="secondary-btn">Non hai un account? Registrati</button>
+                <button id="mainAuthBtn" class="main-btn">Accedi</button>
+                <button id="toggleAuthMode" class="secondary-btn">Non hai un account? Registrati</button>
             </div>
             
             <p id="authMessage" class="auth-message"></p>
