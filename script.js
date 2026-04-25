@@ -1,4 +1,10 @@
-document.addEventListener("DOMContentLoaded", () => {
+// --- AGGIUNGI QUESTO IN CIMA ---
+const supabaseUrl = https://ashctxmmjrjgmakuzpjy.supabase.co;
+const supabaseKey = sb_publishable_eSsDyQAkrJZ_kiKnY27Idw_Fn6uQt2t ;
+const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+console.log("Connessione Luxury stabilita!");
+// --- FINE AGGIUNTA ---document.addEventListener("DOMContentLoaded", () => {
     // 1. Logica Accessibilità (View Settings)
     const viewBtn = document.getElementById('viewSettings');
     if (viewBtn) {
