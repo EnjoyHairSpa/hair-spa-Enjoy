@@ -1,5 +1,4 @@
 // 1. CONFIGURAZIONE SUPABASE
-// Sostituisci queste stringhe con i tuoi dati reali presi da Supabase (Project Settings -> API)
 const SUPABASE_URL = 'https://ashctxmmjrjgmakuzpjy.supabase.co'; 
 const SUPABASE_KEY = 'sb_publishable_eSsDyQAkrJZ_kiKnY27Idw_Fn6uQt2t';
 
@@ -34,7 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Chiudi modale se clicchi fuori dal contenuto bianco
     window.addEventListener('click', (event) => {
         if (event.target === authModal) {
             authModal.style.display = 'none';
@@ -45,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (toggleAuthMode) {
         toggleAuthMode.addEventListener('click', () => {
             isRegistrationMode = !isRegistrationMode;
+            authMessage.innerText = ""; 
             
             if (isRegistrationMode) {
                 modalTitle.innerText = "Registrazione";
@@ -57,13 +56,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 mainAuthBtn.innerText = "Accedi";
                 toggleAuthMode.innerText = "Non hai un account? Registrati";
             }
-            authMessage.innerText = ""; // Pulisce messaggi vecchi
         });
     }
 
-    // --- LOGICA DI AUTENTICAZIONE ---
+    // --- LOGICA DI AUTENTICAZIONE (Sistemata) ---
     if (mainAuthBtn) {
-        mainAuthBtn.addEventListener('click', async () => {
+        mainAuthBtn.onclick = async () => {
             const email = document.getElementById('authEmail').value;
             const password = document.getElementById('authPassword').value;
 
@@ -75,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
             authMessage.innerText = "Elaborazione in corso...";
 
             if (isRegistrationMode) {
-                // DATI REGISTRAZIONE
+                // --- REGISTRAZIONE ---
                 const nome = document.getElementById('authNome').value;
                 const cognome = document.getElementById('authCognome').value;
                 const telefono = document.getElementById('authTelefono').value;
@@ -104,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
             } else {
-                // LOGICA LOGIN
+                // --- LOGIN ---
                 const { data, error } = await _supabase.auth.signInWithPassword({
                     email: email,
                     password: password
@@ -113,12 +111,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (error) {
                     authMessage.innerText = "Accesso negato. Riprova.";
                 } else {
-                    authMessage.innerText = "Accesso effettuato! Reindirizzamento...";
+                    authMessage.style.color = "var(--gold)";
+                    authMessage.innerText = "Accesso effettuato!";
+                    
                     setTimeout(() => {
-                        window.location.href = "Prenotazione.html";
+                        authModal.style.display = 'none';
+                        window.location.reload(); 
                     }, 1000);
                 }
             }
-        });
+        };
     }
 });

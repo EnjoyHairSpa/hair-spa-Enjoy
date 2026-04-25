@@ -5,6 +5,7 @@
     --text-primary: #f2f2f2;
     --text-secondary: #a6a6a6;
     --accent-bronze: #c5a059;
+    --gold: #c5a059;
     --border-color: #333333;
     --font-family: 'Inter', sans-serif;
 }
@@ -16,84 +17,106 @@ body {
     margin: 0;
 }
 
-/* --- TOP NAV --- */
-.top-nav {
-    position: fixed; top: 20px; right: 20px; z-index: 2000; display: flex; gap: 10px;
+/* --- GATEWAY (HOME) - SISTEMAZIONE CARD --- */
+.gateway-container { 
+    display: flex; 
+    height: 100vh; 
+    width: 100vw;
 }
 
-.view-settings, .auth-trigger-btn {
-    background: transparent; color: var(--accent-bronze);
-    border: 1px solid var(--accent-bronze); padding: 8px 12px;
-    font-size: 0.7rem; cursor: pointer; text-transform: uppercase;
-}
-
-/* --- GATEWAY (HOME) --- */
-.gateway-container { display: flex; height: 100vh; }
 .card {
-    flex: 1; background-size: cover; background-position: center;
-    display: flex; align-items: center; justify-content: center; transition: 0.5s;
-}
-.overlay {
-    background: rgba(0, 0, 0, 0.6); width: 100%; height: 100%;
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-}
-
-/* --- MODALE (L'Area che appariva male) --- */
-.modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px);
-    display: flex; align-items: center; justify-content: center; z-index: 3000;
-}
-
-.modal-content {
-    background-color: var(--container-bg);
-    padding: 60px 40px;
-    border: 1px solid var(--accent-bronze);
-    max-width: 400px; width: 90%;
+    flex: 1; 
+    background-size: cover; 
+    background-position: center;
+    display: flex; 
+    transition: flex 0.6s cubic-bezier(0.25, 1, 0.5, 1);
     position: relative;
-    display: flex;
-    flex-direction: column; /* TESTO IN VERTICALE */
+    overflow: hidden;
+}
+
+.card:hover { flex: 1.5; }
+
+.overlay {
+    background: rgba(0, 0, 0, 0.5); 
+    width: 100%; 
+    height: 100%;
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
     align-items: center;
+    transition: background 0.4s;
+}
+
+.card:hover .overlay { background: rgba(0, 0, 0, 0.3); }
+
+/* --- BOX VINCOLI ELEGANTE --- */
+.vincolo-luxury-box {
+    background: linear-gradient(145deg, rgba(26,26,26,1) 0%, rgba(10,10,10,1) 100%);
+    border: 1px solid rgba(197, 160, 89, 0.3);
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 30px;
     text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
-.modal-header { margin-bottom: 30px; }
-
-.modal-title {
-    margin: 0; font-size: 2.2rem; color: var(--accent-bronze);
-    text-transform: uppercase; letter-spacing: 3px; font-weight: 300;
+.vincolo-title {
+    color: var(--gold);
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+    display: block;
 }
 
-.modal-subtitle {
-    margin: 10px 0 0 0; font-size: 1rem; color: var(--text-secondary);
-    text-transform: uppercase; letter-spacing: 2px;
+.vincolo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
 }
 
-.auth-form-group {
-    display: flex; flex-direction: column; gap: 15px; width: 100%;
+.vincolo-item {
+    border-left: 1px solid var(--gold);
+    padding-left: 15px;
+    text-align: left;
 }
 
-.auth-input {
-    width: 100%; padding: 15px; background: #252525;
-    border: 1px solid var(--border-color); color: white; border-radius: 2px;
+.vincolo-number {
+    display: block;
+    font-size: 1.4rem;
+    color: white;
+    font-weight: 300;
+}
+
+.vincolo-desc {
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* --- RESTO DELLO STILE PERCORSI --- */
+.form-container {
+    max-width: 450px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.page-title {
+    text-align: center;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    font-weight: 200;
+    margin-bottom: 30px;
 }
 
 .main-btn {
-    width: 100%; padding: 15px; background: transparent;
-    border: 1px solid var(--accent-bronze); color: var(--accent-bronze);
-    text-transform: uppercase; cursor: pointer; transition: 0.3s;
+    width: 100%; padding: 18px; background: transparent;
+    border: 1px solid var(--gold); color: var(--gold);
+    text-transform: uppercase; letter-spacing: 2px; cursor: pointer;
+    transition: 0.4s; margin-top: 20px;
 }
 
-.main-btn:hover { background: var(--accent-bronze); color: black; }
-
-.secondary-btn {
-    background: transparent; border: none; color: var(--text-secondary);
-    text-decoration: underline; cursor: pointer; font-size: 0.8rem;
-}
-
-.close-btn {
-    position: absolute; top: 20px; right: 20px; font-size: 1.5rem;
-    color: var(--text-secondary); cursor: pointer;
-}
-
-.auth-message { margin-top: 15px; font-size: 0.8rem; }
+.main-btn:hover:not(:disabled) { background: var(--gold); color: black; }
+.main-btn:disabled { opacity: 0.3; cursor: not-allowed; }
