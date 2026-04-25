@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Percorso Sensoriale - Hair Spa</title>
+    <link rel="stylesheet" href="dark-luxury.css">
+</head>
+<body class="dark-page">
+    
+    <button id="viewSettings" class="view-settings">Display: Relaxed</button>
+
+    <div class="form-container">
+        <a href="index.html" class="back-link">← Torna alla Home</a>
+        <h1 class="page-title">Percorso Sensoriale</h1>
+        
+        <form id="percorsiForm">
+            <div class="input-group">
+                <input type="text" id="nome" name="nome" placeholder="Nome" required>
+                <input type="text" id="cognome" name="cognome" placeholder="Cognome" required>
+            </div>
+            <input type="tel" id="telefono" name="telefono" placeholder="Telefono" required>
+            <input type="email" id="email" name="email" placeholder="Email" required>
+
+            <p class="section-label">SELEZIONA IL RITUALE:</p>
+            <select id="pacchetto" name="pacchetto" required>
+                <option value="" disabled selected>Scegli il tuo percorso</option>
+                <option value="Rituale 3 Pieghe">Rituale: 3 Pieghe + Consulenza</option>
+                <option value="Rituale 3 Pieghe + Trattamento">Rituale: 3 Pieghe + 1 Trattamento Cute</option>
+            </select>
+
+            <p class="section-label">PERSONALIZZA CON EXTRA:</p>
+            <div class="servizi-container">
+                <div class="cat-block">
+                    <label class="servizio-item"><input type="checkbox" name="servizio" value="Taglio Donna"> Taglio Donna</label>
+                    <label class="servizio-item"><input type="checkbox" name="servizio" value="Colore"> Colore Personalizzato</label>
+                    <label class="servizio-item"><input type="checkbox" name="servizio" value="Rituale Brasiliano"> Rituale Brasiliano</label>
+                    <label class="servizio-item"><input type="checkbox" name="servizio" value="Scrub Detox"> Scrub Detox</label>
+                </div>
+            </div>
+
+            <label class="servizio-item" style="margin-bottom: 20px; font-weight: 600; color: var(--accent-bronze);">
+                <input type="checkbox" id="consulenza" name="consulenza" style="width: auto; margin-right: 10px;"> 
+                Richiedi Consulenza Sensoriale (Consigliata per la tua prima volta)
+            </label>
+
+            <div class="input-group">
+                <input type="date" id="data" name="data" required>
+                <input type="text" id="orario" name="orario" placeholder="Orario preferito" required>
+            </div>
+
+            <textarea id="note" name="note" placeholder="Note o esigenze particolari" rows="3"></textarea>
+            
+            <button type="submit" class="main-btn">Richiedi Rituale</button>
+        </form>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

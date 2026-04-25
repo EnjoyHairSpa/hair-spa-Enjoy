@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prenotazione - Hair Spa</title>
+    <link rel="stylesheet" href="dark-luxury.css">
+</head>
+<body class="dark-page">
+    
+    <button id="viewSettings" class="view-settings">Display: Relaxed</button>
+
+    <div class="form-container">
+        <a href="index.html" class="back-link">← Torna alla Home</a>
+        <h1 class="page-title">Prenotazione Seduta</h1>
+        
+        <form id="prenotazioneForm">
+            <div class="input-group">
+                <input type="text" id="nome" name="nome" placeholder="Nome" required>
+                <input type="text" id="cognome" name="cognome" placeholder="Cognome" required>
+            </div>
+            <input type="tel" id="telefono" name="telefono" placeholder="Telefono" required>
+            <input type="email" id="email" name="email" placeholder="Email" required>
+            
+            <p class="section-label">SELEZIONA I SERVIZI:</p>
+            <div class="servizi-container">
+                
+                <div class="cat-block">
+                    <div class="cat-title">Piega (Shampoo incluso)</div>
+                    <label class="servizio-item"><input type="checkbox" name="servizio" value="Piega base"> Piega base</label>
+                    <label class="servizio-item"><input type="checkbox" name="servizio" value="Piega biologica"> Piega biologica</label>
+                    <label class="servizio-item"><input type="checkbox" name="servizio" value="Piega reset"> Piega reset</label>
+                </div>
+
+                <div class="cat-block">
+                    <div class="cat-title">Colore</div>
+                    <label class="servizio-item"><input type="checkbox" name="servizio" value="Color HD"> Color HD</label>
+                    <label class="servizio-item"><input type="checkbox" name="servizio" value="Agricolor Bio"> Agricolor Bio</label>
+                </div>
+
+                <div class="cat-block">
+                    <div class="cat-title">Trattamenti</div>
+                    <label class="servizio-item"><input type="checkbox" name="servizio" value="Rituale Brasiliano"> Rituale Brasiliano</label>
+                    <label class="servizio-item"><input type="checkbox" name="servizio" value="Scrub detox"> Scrub detox</label>
+                </div>
+
+                <div class="cat-block">
+                    <div class="cat-title">Taglio</div>
+                    <label class="servizio-item"><input type="checkbox" name="servizio" value="Taglio donna"> Taglio donna</label>
+                    <label class="servizio-item"><input type="checkbox" name="servizio" value="Taglio bimba"> Taglio bimba</label>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <input type="date" id="data" name="data" required>
+                <input type="text" id="orario" name="orario" placeholder="Orario (es. 10:00)" required>
+            </div>
+
+            <textarea id="note" name="note" placeholder="Note o esigenze particolari" rows="3"></textarea>
+            
+            <button type="submit" class="main-btn">Richiedi Prenotazione</button>
+        </form>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
