@@ -1,151 +1,99 @@
-/* --- 1. Variabili di Design (Luxury System) --- */
+/* --- VARIABILI E BASE --- */
 :root {
     --bg-color: #0d0d0d;
     --container-bg: #1a1a1a;
     --text-primary: #f2f2f2;
     --text-secondary: #a6a6a6;
     --accent-bronze: #c5a059;
-    --accent-hover: #b86b29;
     --border-color: #333333;
-    --input-bg: #1a1a1a;
     --font-family: 'Inter', sans-serif;
-    --line-height-base: 1.6;
 }
 
-/* --- 2. Base & Accessibilità --- */
 body {
     background-color: var(--bg-color);
     color: var(--text-primary);
     font-family: var(--font-family);
-    line-height: var(--line-height-base);
     margin: 0;
-    transition: line-height 0.3s ease;
 }
 
-body.compact { line-height: 1.2; }
-
-/* Tasto Impostazioni (Spostato a sinistra per far spazio al Login) */
-.view-settings {
-    position: fixed; 
-    top: 20px; 
-    right: 180px; /* Spostato per non scontrarsi */
-    background: transparent; 
-    color: var(--accent-bronze);
-    border: 1px solid var(--accent-bronze);
-    padding: 8px 12px; 
-    font-size: 0.7rem;
-    cursor: pointer; 
-    text-transform: uppercase;
-    letter-spacing: 1px; 
-    z-index: 2000; 
-    transition: 0.3s;
+/* --- TOP NAV --- */
+.top-nav {
+    position: fixed; top: 20px; right: 20px; z-index: 2000; display: flex; gap: 10px;
 }
-.view-settings:hover { background: var(--accent-bronze); color: #000; }
 
-/* --- 3. Gateway (Home Page) --- */
-.gateway-container { display: flex; height: 100vh; width: 100%; }
+.view-settings, .auth-trigger-btn {
+    background: transparent; color: var(--accent-bronze);
+    border: 1px solid var(--accent-bronze); padding: 8px 12px;
+    font-size: 0.7rem; cursor: pointer; text-transform: uppercase;
+}
+
+/* --- GATEWAY (HOME) --- */
+.gateway-container { display: flex; height: 100vh; }
 .card {
     flex: 1; background-size: cover; background-position: center;
-    display: flex; align-items: center; justify-content: center;
-    position: relative; transition: 0.5s;
+    display: flex; align-items: center; justify-content: center; transition: 0.5s;
 }
-.card:hover { flex: 1.2; }
 .overlay {
-    background: rgba(0, 0, 0, 0.6); padding: 40px;
-    text-align: center; color: #fff; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6); width: 100%; height: 100%;
     display: flex; flex-direction: column; justify-content: center; align-items: center;
 }
 
-/* --- 4. Form & Container Eleganti --- */
-.dark-page { display: flex; justify-content: center; padding: 40px 20px; min-height: 100vh; }
-.form-container {
-    background-color: var(--container-bg);
-    max-width: 480px; width: 100%;
-    padding: 40px; border-radius: 4px;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-}
-
-.page-title { color: var(--accent-bronze); text-align: center; margin-top: 0; font-size: 1.8em; font-weight: 300; }
-.back-link { display: block; margin-bottom: 20px; color: var(--text-secondary); text-decoration: none; font-size: 0.8rem; }
-
-.input-group { display: flex; gap: 15px; }
-input, select, textarea {
-    width: 100%; padding: 15px; margin-bottom: 20px;
-    background-color: var(--input-bg);
-    border: 1px solid var(--border-color);
-    color: var(--text-primary);
-    font-family: var(--font-family);
-    box-sizing: border-box; transition: border-color 0.3s;
-}
-input:focus, textarea:focus, select:focus { border-color: var(--accent-bronze); outline: none; }
-
-/* --- 5. Struttura Servizi --- */
-.section-label { font-size: 0.75rem; color: var(--text-secondary); margin: 20px 0 10px 0; text-transform: uppercase; letter-spacing: 1.5px; }
-.servizi-container { 
-    max-height: 300px; overflow-y: auto; border: 1px solid var(--border-color); 
-    background: var(--input-bg); padding: 15px; margin-bottom: 20px; border-radius: 2px;
-}
-.cat-block { margin-bottom: 15px; }
-.cat-title { font-weight: 600; font-size: 0.85rem; color: var(--accent-bronze); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-.servizio-item { display: flex; align-items: center; margin-bottom: 5px; font-size: 0.9rem; color: var(--text-primary); cursor: pointer; }
-.servizio-item input { width: auto; margin: 0 10px 0 0; cursor: pointer; accent-color: var(--accent-bronze); }
-
-/* --- 6. Bottoni & Area Riservata --- */
-.main-btn {
-    width: 100%; padding: 18px;
-    background-color: transparent; color: var(--accent-bronze);
-    border: 1px solid var(--accent-bronze);
-    font-family: var(--font-family);
-    text-transform: uppercase; letter-spacing: 2px;
-    cursor: pointer; transition: 0.3s; margin-top: 10px;
-}
-.main-btn:hover { background-color: var(--accent-bronze); color: #fff; }
-
-/* Tasto Area Riservata */
-.top-nav {
-    position: fixed; top: 20px; right: 20px; z-index: 2000;
-}
-.auth-trigger-btn {
-    background: transparent; color: var(--accent-bronze);
-    border: 1px solid var(--accent-bronze);
-    padding: 8px 15px; font-size: 0.7rem;
-    cursor: pointer; text-transform: uppercase;
-    letter-spacing: 1px; transition: 0.3s;
-}
-.auth-trigger-btn:hover { background: var(--accent-bronze); color: #000; }
-
-/* --- 7. Modale Login (Luxury Blur) --- */
+/* --- MODALE (L'Area che appariva male) --- */
 .modal-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(10px);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 3000;
+    background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px);
+    display: flex; align-items: center; justify-content: center; z-index: 3000;
 }
+
 .modal-content {
     background-color: var(--container-bg);
-    padding: 40px; border: 1px solid var(--accent-bronze);
+    padding: 60px 40px;
+    border: 1px solid var(--accent-bronze);
     max-width: 400px; width: 90%;
-    position: relative; text-align: center;
-    box-shadow: 0 0 30px rgba(197, 160, 89, 0.1);
+    position: relative;
+    display: flex;
+    flex-direction: column; /* TESTO IN VERTICALE */
+    align-items: center;
+    text-align: center;
 }
-.close-btn {
-    position: absolute; top: 15px; right: 20px;
-    font-size: 1.5rem; color: var(--text-secondary); cursor: pointer;
+
+.modal-header { margin-bottom: 30px; }
+
+.modal-title {
+    margin: 0; font-size: 2.2rem; color: var(--accent-bronze);
+    text-transform: uppercase; letter-spacing: 3px; font-weight: 300;
 }
-.close-btn:hover { color: var(--accent-bronze); }
+
+.modal-subtitle {
+    margin: 10px 0 0 0; font-size: 1rem; color: var(--text-secondary);
+    text-transform: uppercase; letter-spacing: 2px;
+}
+
+.auth-form-group {
+    display: flex; flex-direction: column; gap: 15px; width: 100%;
+}
+
+.auth-input {
+    width: 100%; padding: 15px; background: #252525;
+    border: 1px solid var(--border-color); color: white; border-radius: 2px;
+}
+
+.main-btn {
+    width: 100%; padding: 15px; background: transparent;
+    border: 1px solid var(--accent-bronze); color: var(--accent-bronze);
+    text-transform: uppercase; cursor: pointer; transition: 0.3s;
+}
+
+.main-btn:hover { background: var(--accent-bronze); color: black; }
 
 .secondary-btn {
-    background: transparent; border: none;
-    color: var(--text-secondary); text-decoration: underline;
-    cursor: pointer; margin-top: 15px; font-size: 0.8rem;
+    background: transparent; border: none; color: var(--text-secondary);
+    text-decoration: underline; cursor: pointer; font-size: 0.8rem;
 }
-.auth-message { margin-top: 15px; font-size: 0.8rem; color: var(--accent-bronze); }
 
-/* --- 8. Mobile --- */
-@media (max-width: 768px) {
-    .gateway-container { flex-direction: column; }
-    .input-group { flex-direction: column; gap: 0; }
-    .view-settings { right: auto; left: 20px; top: 20px; } /* Mobile: a sinistra */
+.close-btn {
+    position: absolute; top: 20px; right: 20px; font-size: 1.5rem;
+    color: var(--text-secondary); cursor: pointer;
 }
+
+.auth-message { margin-top: 15px; font-size: 0.8rem; }
