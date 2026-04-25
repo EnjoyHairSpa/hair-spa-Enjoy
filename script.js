@@ -1,8 +1,9 @@
 /* --- 1. CONFIGURAZIONE SUPABASE --- */
-const supabaseUrl = https://ashctxmmjrjgmakuzpjy.supabase.co;
-const supabaseKey = sb_publishable_eSsDyQAkrJZ_kiKnY27Idw_Fn6uQt2t;
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+const supabaseUrl = 'https://ashctxmmjrjgmakuzpjy.supabase.co';
+const supabaseKey = 'sb_publishable_eSsDyQAkrJZ_kiKnY27Idw_Fn6uQt2t';
 
+// Cambiamo il nome della costante per evitare il conflitto
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 console.log("Sistema Luxury: Connessione stabilita!");
 
 document.addEventListener("DOMContentLoaded", () => {
