@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hair Spa - Benvenuto</title>
+    <title>Hair Spa - Luxury Experience</title>
     <link rel="stylesheet" href="dark-luxury.css">
-    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -16,36 +15,44 @@
     </div>
 
     <div class="gateway-container">
-        <div class="card" style="background-image: url('Singola.png');">
-            <div class="overlay">
-                <h2>Seduta di Benessere</h2>
-                <p>Il tuo momento dedicato, su misura.</p>
-                <a href="prenotazione.html" class="main-btn">Prenota Rituale</a>
+        
+        <div class="luxury-card" style="background-image: url('Singola.png');">
+            <div class="card-overlay">
+                <div class="card-content">
+                    <span class="card-subtitle">Esperienza Unica</span>
+                    <h2 class="card-title">Seduta di Benessere</h2>
+                    <p class="card-text">Il tuo momento dedicato, su misura.</p>
+                    <a href="prenotazione.html" class="elegant-btn">Prenota Rituale</a>
+                </div>
             </div>
         </div>
 
-        <div class="card" style="background-image: url('percorso.png');">
-            <div class="overlay">
-                <h2>Percorso Sensoriale</h2>
-                <p>Un programma continuo per la bellezza dei tuoi capelli.</p>
-                <a href="percorsi.html" class="main-btn">Componi il Percorso</a>
+        <div class="luxury-card" style="background-image: url('percorso.png');">
+            <div class="card-overlay">
+                <div class="card-content">
+                    <span class="card-subtitle">Continuità e Cura</span>
+                    <h2 class="card-title">Percorso Sensoriale</h2>
+                    <p class="card-text">Un programma continuo per la bellezza dei tuoi capelli.</p>
+                    <a href="percorsi.html" class="elegant-btn">Componi il Percorso</a>
+                </div>
             </div>
         </div>
+
     </div>
 
-    <div id="authModal" class="modal-overlay" style="display: none;">
-        <div class="modal-content card">
+    <div id="authModal" class="modal-overlay">
+        <div class="modal-content">
             <span id="closeAuth" class="close-btn">&times;</span>
             
-            <h3>Benvenuta</h3>
-            <p>In Enjoy</p>
+            <h3 style="color: var(--gold); letter-spacing: 3px; font-weight: 200;">BENVENUTA</h3>
+            <p style="font-size: 0.8rem; letter-spacing: 2px; color: #666; margin-bottom: 20px;">IN ENJOY</p>
             
             <div class="auth-form-group">
                 <input type="email" id="authEmail" placeholder="Email" class="auth-input">
                 <input type="password" id="authPassword" placeholder="Password" class="auth-input">
                 
-                <button id="btnLogin" class="main-btn">Accedi</button>
-                <button id="btnRegister" class="secondary-btn">Non hai un account? Registrati</button>
+                <button id="btnLogin" class="elegant-btn" style="width: 100%; margin-top: 10px;">Accedi</button>
+                <button id="btnRegister" class="secondary-btn" style="background:none; border:none; color:#555; cursor:pointer; font-size:0.7rem; margin-top:10px; text-transform:uppercase;">Non hai un account? Registrati</button>
             </div>
             
             <p id="authMessage" class="auth-message"></p>

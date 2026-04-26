@@ -1,124 +1,123 @@
-// 1. CONFIGURAZIONE SUPABASE
 const SUPABASE_URL = 'https://ashctxmmjrjgmakuzpjy.supabase.co'; 
 const SUPABASE_KEY = 'sb_publishable_eSsDyQAkrJZ_kiKnY27Idw_Fn6uQt2t';
-
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const IL_TUO_NUMERO = "390952165888";
 
-// 2. AVVIO LOGICA AL CARICAMENTO DELLA PAGINA
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    const isPrenotazionePage = window.location.pathname.includes('prenotazione.html');
+    const authModal = document.getElementById('authModal');
+    const authMessage = document.getElementById('authMessage');
     
-    // Riferimenti Elementi DOM
+    // --- LOGICA A: CONTROLLO SESSIONE ---
+    const { data: { session } } = await _supabase.auth.getSession();
+
+    if (isPrenotazionePage) {
+        // Se siamo in prenotazione e non siamo loggati -> Rimbalza alla Home
+        if (!session) {
+            window.location.replace("index.html?auth=required");
+            return;
+        }
+        // Se loggato, carica i servizi
+        caricaServiziDinamici(session.user.id);
+    } else {
+        // Siamo in Home: controlliamo se siamo stati rimandati qui
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('auth') === 'required' && authModal) {
+            authModal.style.setProperty('display', 'flex', 'important');
+            if (authMessage) authMessage.innerText = "Accesso richiesto per prenotare.";
+        }
+    }
+
+    // --- LOGICA B: GESTIONE MODALE (APERTURA/CHIUSURA) ---
     const openAuth = document.getElementById('openAuth');
     const closeAuth = document.getElementById('closeAuth');
-    const authModal = document.getElementById('authModal');
-    const mainAuthBtn = document.getElementById('mainAuthBtn');
-    const toggleAuthMode = document.getElementById('toggleAuthMode');
-    const registerFields = document.getElementById('registerFields');
-    const authMessage = document.getElementById('authMessage');
-    const modalTitle = document.getElementById('modalTitle');
 
-    let isRegistrationMode = false;
+    if (openAuth) openAuth.onclick = () => authModal.style.setProperty('display', 'flex', 'important');
+    if (closeAuth) closeAuth.onclick = () => authModal.style.display = 'none';
 
-    // --- GESTIONE APERTURA/CHIUSURA MODALE ---
-    if (openAuth) {
-        openAuth.addEventListener('click', () => {
-            authModal.style.display = 'flex';
-            console.log("Modale aperta");
-        });
-    }
-
-    if (closeAuth) {
-        closeAuth.addEventListener('click', () => {
-            authModal.style.display = 'none';
-        });
-    }
-
-    window.addEventListener('click', (event) => {
-        if (event.target === authModal) {
-            authModal.style.display = 'none';
-        }
-    });
-
-    // --- CAMBIO LOGIN / REGISTRAZIONE ---
-    if (toggleAuthMode) {
-        toggleAuthMode.addEventListener('click', () => {
-            isRegistrationMode = !isRegistrationMode;
-            authMessage.innerText = ""; 
-            
-            if (isRegistrationMode) {
-                modalTitle.innerText = "Registrazione";
-                registerFields.style.display = 'block';
-                mainAuthBtn.innerText = "Registrati";
-                toggleAuthMode.innerText = "Hai già un account? Accedi";
-            } else {
-                modalTitle.innerText = "Benvenuta";
-                registerFields.style.display = 'none';
-                mainAuthBtn.innerText = "Accedi";
-                toggleAuthMode.innerText = "Non hai un account? Registrati";
-            }
-        });
-    }
-
-    // --- LOGICA DI AUTENTICAZIONE (Sistemata) ---
-    if (mainAuthBtn) {
-        mainAuthBtn.onclick = async () => {
+    // --- LOGICA C: LOGIN ---
+    const btnLogin = document.getElementById('btnLogin');
+    if (btnLogin) {
+        btnLogin.onclick = async (e) => {
+            e.preventDefault();
             const email = document.getElementById('authEmail').value;
             const password = document.getElementById('authPassword').value;
 
-            if (!email || !password) {
-                authMessage.innerText = "Inserisci email e password.";
-                return;
-            }
+            const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
 
-            authMessage.innerText = "Elaborazione in corso...";
-
-            if (isRegistrationMode) {
-                // --- REGISTRAZIONE ---
-                const nome = document.getElementById('authNome').value;
-                const cognome = document.getElementById('authCognome').value;
-                const telefono = document.getElementById('authTelefono').value;
-
-                if (!nome || !cognome || !telefono) {
-                    authMessage.innerText = "Tutti i campi sono obbligatori!";
-                    return;
-                }
-
-                const { data, error } = await _supabase.auth.signUp({
-                    email: email,
-                    password: password,
-                    options: {
-                        data: {
-                            nome: nome,
-                            cognome: cognome,
-                            telefono: telefono
-                        }
-                    }
-                });
-
-                if (error) {
-                    authMessage.innerText = "Errore: " + error.message;
-                } else {
-                    authMessage.innerText = "Registrazione completata! Controlla la tua email.";
-                }
-
+            if (error) {
+                alert("Errore: " + error.message);
             } else {
-                // --- LOGIN ---
-                const { data, error } = await _supabase.auth.signInWithPassword({
-                    email: email,
-                    password: password
+                const params = new URLSearchParams(window.location.search);
+                if (params.get('auth') === 'required') {
+                    window.location.href = "prenotazione.html";
+                } else {
+                    window.location.reload();
+                }
+            }
+        };
+    }
+
+    // --- FUNZIONE CARICAMENTO SERVIZI (Solo per prenotazione.html) ---
+    async function caricaServiziDinamici(userId) {
+        const container = document.getElementById('servizi-dinamici');
+        if (!container) return;
+
+        const { data: servizi } = await _supabase.from('services').select('*').order('categoria');
+
+        if (servizi) {
+            container.innerHTML = "";
+            const categorie = [...new Set(servizi.map(s => s.categoria))];
+            
+            categorie.forEach(cat => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'accordion-item';
+                wrapper.innerHTML = `
+                    <div class="cat-title"><span>${cat}</span> <span>▼</span></div>
+                    <div class="cat-content" style="display:none;"></div>
+                `;
+                
+                const content = wrapper.querySelector('.cat-content');
+                servizi.filter(s => s.categoria === cat).forEach(s => {
+                    content.innerHTML += `
+                        <label class="radio-item">
+                            <input type="radio" name="${cat}" value="${s.nome_servizio}" data-id="${s.id}">
+                            <span style="color:#ccc;">${s.nome_servizio}</span>
+                        </label>`;
                 });
 
-                if (error) {
-                    authMessage.innerText = "Accesso negato. Riprova.";
-                } else {
-                    authMessage.style.color = "var(--gold)";
-                    authMessage.innerText = "Accesso effettuato!";
-                    
-                    setTimeout(() => {
-                        authModal.style.display = 'none';
-                        window.location.reload(); 
-                    }, 1000);
-                }
+                wrapper.querySelector('.cat-title').onclick = () => {
+                    content.style.display = content.style.display === "none" ? "block" : "none";
+                };
+                container.appendChild(wrapper);
+            });
+        }
+    }
+
+    // --- LOGICA INVIO PRENOTAZIONE ---
+    const form = document.getElementById('prenotazioneForm');
+    if (form) {
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            const radioScelti = document.querySelectorAll('input[type="radio"]:checked');
+            if (radioScelti.length === 0) { alert("Scegli un servizio!"); return; }
+
+            const dataVal = document.getElementById('data').value;
+            const oraVal = document.getElementById('orario').value;
+
+            const righe = Array.from(radioScelti).map(r => ({
+                cliente_id: session.user.id,
+                servizio_id: parseInt(r.getAttribute('data-id')),
+                data_ora: `${dataVal} ${oraVal}:00`,
+                stato: 'in_attesa'
+            }));
+
+            const { error: dbError } = await _supabase.from('bookings').insert(righe);
+            if (!dbError) {
+                const nomiS = Array.from(radioScelti).map(r => r.value).join(", ");
+                const testoWA = `✨ *NUOVA PRENOTAZIONE* ✨%0A💇‍♂️ *Servizi:* ${nomiS}%0A📅 *Data:* ${dataVal}%0A⏰ *Ora:* ${oraVal}`;
+                window.open(`https://wa.me/${IL_TUO_NUMERO}?text=${testoWA}`, '_blank');
+                window.location.href = "index.html";
             }
         };
     }
