@@ -366,3 +366,17 @@ body {
     text-align: center !important;
     width: 100% !important;
 }
+/* FIX PER MOBILE: Permette lo scroll se il modulo è lungo */
+.modal-content {
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Rende il link privacy più facile da cliccare col dito */
+#registerSection a {
+    color: var(--gold) !important;
+    text-decoration: underline !important;
+    padding: 5px 0;
+    display: inline-block;
+}
