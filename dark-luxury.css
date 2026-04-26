@@ -294,22 +294,19 @@ body {
     accent-color: var(--gold);
 }
 
-/* --- 8. FIX POSIZIONAMENTO BOTTONE INVIO --- */
+/* --- 8. STILE BOTTONI INVIO (PERCORSI E PRENOTAZIONE) --- */
 
-#percorsiForm {
-    padding-bottom: 80px; /* Crea spazio extra in fondo al form per lo scroll */
-}
-
-#btnRichiedi {
+/* Applichiamo lo stile a ENTRAMBI gli ID dei bottoni */
+#btnRichiedi, #btnPrenota {
     display: block;
-    margin: 40px auto 20px auto; /* Centra orizzontalmente e dà spazio sopra/sotto */
+    margin: 40px auto 20px auto; /* Centra e dà spazio */
     width: 85%;
     max-width: 350px;
     padding: 18px;
-    background: var(--gold); /* Colore pieno per renderlo primario */
-    color: #000;
+    background: var(--gold); /* Oro pieno Luxury */
+    color: #000; /* Testo nero per leggibilità su oro */
     border: none;
-    border-radius: 50px;
+    border-radius: 50px; /* Arrotondato elegante */
     font-size: 0.8rem;
     font-weight: bold;
     text-transform: uppercase;
@@ -319,7 +316,15 @@ body {
     box-shadow: 0 10px 20px rgba(197, 160, 89, 0.2);
 }
 
-#btnRichiedi:disabled {
+/* Effetto al passaggio del mouse */
+#btnRichiedi:hover, #btnPrenota:hover {
+    background: var(--gold-bright); /* Oro più luminoso */
+    transform: translateY(-2px);
+    box-shadow: 0 15px 25px rgba(197, 160, 89, 0.4);
+}
+
+/* Stato disabilitato */
+#btnRichiedi:disabled, #btnPrenota:disabled {
     background: #222;
     color: #555;
     opacity: 0.6;
@@ -327,15 +332,11 @@ body {
     box-shadow: none;
 }
 
-#percorsoMessage {
-    text-align: center;
-    display: block;
-    width: 100%;
-    margin-top: 20px;
-    font-size: 0.75rem;
-    letter-spacing: 1px;
-    text-transform: uppercase;
+/* Spazio extra in fondo ai form per lo scroll su mobile */
+#percorsiForm, #prenotazioneForm {
+    padding-bottom: 80px; 
 }
+
 /* --- 9. CENTRATURA TOTALE FORM --- */
 
 /* Centra i titoli delle sezioni */
