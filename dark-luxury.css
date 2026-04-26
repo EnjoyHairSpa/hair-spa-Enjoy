@@ -50,6 +50,29 @@ body {
     color: #000;
 }
 
+/* --- AGGIUNTA TASTO INDIETRO --- */
+.btn-back {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    transition: 0.3s;
+    text-decoration: none; /* Rimuove la sottolineatura del link */
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-back:hover {
+    background: var(--gold);
+    color: #000;
+}
+
 /* --- 3. GATEWAY CONTAINER (APP STYLE VERTICAL CARD) --- */
 .gateway-container {
     display: flex;
@@ -269,4 +292,76 @@ body {
 
 .radio-item input[type="radio"] {
     accent-color: var(--gold);
+}
+
+/* --- 8. FIX POSIZIONAMENTO BOTTONE INVIO --- */
+
+#percorsiForm {
+    padding-bottom: 80px; /* Crea spazio extra in fondo al form per lo scroll */
+}
+
+#btnRichiedi {
+    display: block;
+    margin: 40px auto 20px auto; /* Centra orizzontalmente e dà spazio sopra/sotto */
+    width: 85%;
+    max-width: 350px;
+    padding: 18px;
+    background: var(--gold); /* Colore pieno per renderlo primario */
+    color: #000;
+    border: none;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 20px rgba(197, 160, 89, 0.2);
+}
+
+#btnRichiedi:disabled {
+    background: #222;
+    color: #555;
+    opacity: 0.6;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+#percorsoMessage {
+    text-align: center;
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+/* --- 9. CENTRATURA TOTALE FORM --- */
+
+/* Centra i titoli delle sezioni */
+.section-label, .section-luxury-label {
+    text-align: center !important;
+    display: block !important;
+    width: 100% !important;
+    margin: 30px auto 15px auto !important;
+}
+
+/* Centra le etichette (Giorno, Orario, Note) */
+.input-group label, .note-container label {
+    display: block !important;
+    text-align: center !important;
+    width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+/* Centra il testo dentro i campi di input */
+.input-luxury {
+    text-align: center !important;
+}
+
+/* Centra il titolo principale della pagina */
+.page-title {
+    text-align: center !important;
+    width: 100% !important;
 }
