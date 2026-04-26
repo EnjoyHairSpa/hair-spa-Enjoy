@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 session,
                 profilo: profilo || { nome: "Cliente", email: session.user.email },
                 righe,
-                numeroWA: "393208443534", // Sostituisci col tuo numero reale
+                numeroWA: "390952165888", // Sostituisci col tuo numero reale
                 dataVal,
                 oraVal,
                 noteVal,
