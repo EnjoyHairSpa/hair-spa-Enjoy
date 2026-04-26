@@ -103,12 +103,25 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                 }
             });
-
-            if (error) {
+if (error) {
                 alert("Errore: " + error.message);
             } else {
                 alert("Benvenuta in Enjoy! Controlla la tua email per confermare l'account.");
-                window.location.reload();
+                
+                // 1. Puliamo i campi della registrazione per evitare sovrapposizioni
+                document.getElementById('regName').value = "";
+                document.getElementById('regSurname').value = "";
+                document.getElementById('regPhone').value = "";
+                document.getElementById('regEmail').value = "";
+                document.getElementById('regPassword').value = "";
+
+                // 2. Torniamo alla vista Login senza ricaricare la pagina
+                toggleAuth(false); 
+
+                // 3. Inseriamo l'email appena registrata nel campo login e mettiamo il focus sulla password
+                document.getElementById('authEmail').value = email;
+                document.getElementById('authPassword').value = "";
+                document.getElementById('authPassword').focus();
             }
         };
     }
