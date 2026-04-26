@@ -40,10 +40,11 @@
 
     </div>
 
-    <div id="authModal" class="modal-overlay">
-        <div class="modal-content">
-            <span id="closeAuth" class="close-btn">&times;</span>
-            
+<div id="authModal" class="modal-overlay">
+    <div class="modal-content">
+        <span id="closeAuth" class="close-btn">&times;</span>
+        
+        <div id="loginSection">
             <h3 style="color: var(--gold); letter-spacing: 3px; font-weight: 200;">BENVENUTA</h3>
             <p style="font-size: 0.8rem; letter-spacing: 2px; color: #666; margin-bottom: 20px;">IN ENJOY</p>
             
@@ -52,12 +53,46 @@
                 <input type="password" id="authPassword" placeholder="Password" class="auth-input">
                 
                 <button id="btnLogin" class="elegant-btn" style="width: 100%; margin-top: 10px;">Accedi</button>
-                <button id="btnRegister" class="secondary-btn" style="background:none; border:none; color:#555; cursor:pointer; font-size:0.7rem; margin-top:10px; text-transform:uppercase;">Non hai un account? Registrati</button>
+                <button type="button" onclick="toggleAuth(true)" class="secondary-btn" style="background:none; border:none; color:#555; cursor:pointer; font-size:0.7rem; margin-top:15px; text-transform:uppercase;">Non hai un account? Registrati</button>
             </div>
-            
-            <p id="authMessage" class="auth-message"></p>
         </div>
+
+        <div id="registerSection" style="display: none;">
+            <h3 style="color: var(--gold); letter-spacing: 3px; font-weight: 200;">IL TUO PROFILO</h3>
+            <p style="font-size: 0.7rem; letter-spacing: 2px; color: #666; margin-bottom: 20px;">UNISCITI ALL'ESPERIENZA</p>
+            
+            <div class="auth-form-group">
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <input type="text" id="regName" placeholder="Nome *" class="auth-input" style="margin-bottom:0;">
+                    <input type="text" id="regSurname" placeholder="Cognome *" class="auth-input" style="margin-bottom:0;">
+                </div>
+                
+                <input type="tel" id="regPhone" placeholder="Telefono *" class="auth-input">
+                <input type="email" id="regEmail" placeholder="Email *" class="auth-input">
+                <input type="password" id="regPassword" placeholder="Scegli Password *" class="auth-input">
+                
+                <div style="text-align: left; margin-bottom: 10px;">
+                    <label style="font-size: 0.6rem; color: #555; text-transform: uppercase;">Data di Nascita (Opzionale)</label>
+                    <input type="date" id="regBirth" class="auth-input" style="margin-top: 5px;">
+                </div>
+
+                <div style="display: flex; align-items: flex-start; gap: 10px; margin: 15px 0; text-align: left;">
+                    <input type="checkbox" id="privacyCheck" style="margin-top: 3px;">
+                    <label for="privacyCheck" style="font-size: 0.6rem; color: #666; line-height: 1.2;">
+                        Accetto il trattamento dei dati personali ai fini della prenotazione e dei servizi Hair Spa. *
+                    </label>
+                </div>
+
+                <button id="btnDoRegister" class="elegant-btn" style="width: 100%;">Crea Account</button>
+                <button type="button" onclick="toggleAuth(false)" class="secondary-btn" style="background:none; border:none; color:#555; cursor:pointer; font-size:0.7rem; margin-top:15px; text-transform:uppercase;">Hai già un account? Accedi</button>
+            </div>
+        </div>
+        
+        <p id="authMessage" class="auth-message"></p>
     </div>
+</div>
+
+
 
     <script src="script.js"></script>
 </body>

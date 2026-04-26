@@ -3,6 +3,23 @@ const SUPABASE_KEY = 'sb_publishable_eSsDyQAkrJZ_kiKnY27Idw_Fn6uQt2t';
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const IL_TUO_NUMERO = "390952165888";
 
+// --- NOVITÀ: FUNZIONE DI SCAMBIO (Mettila qui, fuori dal DOMContentLoaded) ---
+function toggleAuth(showRegister) {
+    const loginSec = document.getElementById('loginSection');
+    const registerSec = document.getElementById('registerSection');
+    const message = document.getElementById('authMessage');
+
+    if (message) message.textContent = ""; 
+
+    if (showRegister) {
+        loginSec.style.display = 'none';
+        registerSec.style.display = 'block';
+    } else {
+        loginSec.style.display = 'block';
+        registerSec.style.display = 'none';
+    }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     const isPrenotazionePage = window.location.pathname.includes('prenotazione.html');
     const authModal = document.getElementById('authModal');
@@ -12,15 +29,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const { data: { session } } = await _supabase.auth.getSession();
 
     if (isPrenotazionePage) {
-        // Se siamo in prenotazione e non siamo loggati -> Rimbalza alla Home
         if (!session) {
             window.location.replace("index.html?auth=required");
             return;
         }
-        // Se loggato, carica i servizi
         caricaServiziDinamici(session.user.id);
     } else {
-        // Siamo in Home: controlliamo se siamo stati rimandati qui
         const params = new URLSearchParams(window.location.search);
         if (params.get('auth') === 'required' && authModal) {
             authModal.style.setProperty('display', 'flex', 'important');
@@ -58,7 +72,48 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
     }
 
-    // --- FUNZIONE CARICAMENTO SERVIZI (Solo per prenotazione.html) ---
+    // --- NOVITÀ: LOGICA D: REGISTRAZIONE (Inserita subito dopo il Login) ---
+    const btnDoRegister = document.getElementById('btnDoRegister');
+    if (btnDoRegister) {
+        btnDoRegister.onclick = async (e) => {
+            e.preventDefault();
+            
+            const nome = document.getElementById('regName').value;
+            const cognome = document.getElementById('regSurname').value;
+            const telefono = document.getElementById('regPhone').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const dataNascita = document.getElementById('regBirth').value;
+            const privacyOk = document.getElementById('privacyCheck').checked;
+
+            if (!nome || !cognome || !telefono || !email || !password || !privacyOk) {
+                alert("Per favore, compila i campi obbligatori e accetta la privacy.");
+                return;
+            }
+
+            const { data, error } = await _supabase.auth.signUp({
+                email: email,
+                password: password,
+                options: {
+                    data: {
+                        nome: nome,
+                        cognome: cognome,
+                        telefono: telefono,
+                        data_nascita: dataNascita || null
+                    }
+                }
+            });
+
+            if (error) {
+                alert("Errore: " + error.message);
+            } else {
+                alert("Benvenuta in Enjoy! Controlla la tua email per confermare l'account.");
+                window.location.reload();
+            }
+        };
+    }
+
+    // --- FUNZIONE CARICAMENTO SERVIZI ---
     async function caricaServiziDinamici(userId) {
         const container = document.getElementById('servizi-dinamici');
         if (!container) return;
