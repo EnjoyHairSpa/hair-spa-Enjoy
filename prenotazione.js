@@ -3,21 +3,29 @@ const SUPABASE_URL = 'https://ashctxmmjrjgmakuzpjy.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_eSsDyQAkrJZ_kiKnY27Idw_Fn6uQt2t'; 
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// 2. DEFINIZIONE HELPER (Incluso qui per evitare errori "not defined")
 const BookingHelper = {
     formatWA(data) {
         const { nome, cognome, email, servizi, dataVal, oraVal, note } = data;
+        
+        // Trasformiamo la stringa/array dei servizi in una lista con i bullet point
+        // Se 'servizi' è "Taglio, Barba", diventerà:
+        // • Taglio
+        // • Barba
+        const listaServizi = servizi.split(',')
+            .map(s => `  • ${s.trim()}`)
+            .join('\n');
+
         const testo = `✨ *NUOVA PRENOTAZIONE ENJOY* ✨\n\n` +
                       `👤 *Cliente:* ${nome} ${cognome}\n` +
                       `📧 *Email:* ${email}\n\n` +
                       `📅 *Data:* ${dataVal}\n` +
-                      `⏰ *Ora:* ${oraVal}\n` +
-                      `💇‍♂️ *Servizi:* ${servizi}\n` +
+                      `⏰ *Ora:* ${oraVal}\n\n` +
+                      `💇‍♂️ *Servizi richiesti:*\n${listaServizi}\n\n` + // <--- Lista verticale
                       (note ? `📝 *Note:* _${note}_\n` : "") +
                       `\n_Inviato con eleganza dall'App Luxury_`;
+
         return encodeURIComponent(testo);
     },
-
     async invia(supabase, { session, profilo, righe, numeroWA, dataVal, oraVal, noteVal, nomiServizi }) {
         // Salva su Supabase
         const { error } = await supabase.from('bookings').insert(righe);
@@ -125,7 +133,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 session,
                 profilo: profilo || { nome: "Cliente", email: session.user.email },
                 righe,
-                numeroWA: "393208443534", // Sostituisci col tuo numero reale
+                numeroWA: "390952165888", // Sostituisci col tuo numero reale
                 dataVal,
                 oraVal,
                 noteVal,
