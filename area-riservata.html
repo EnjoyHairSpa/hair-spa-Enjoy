@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I Tuoi Rituali - Hair Spa</title>
+    <link rel="stylesheet" href="dark-luxury.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* --- 1. SFONDO CON IMMAGINE "LISTA" --- */
+        body.dark-page {
+            background: url('lista.png') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Overlay scuro per far risaltare il testo oro */
+        body.dark-page::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.82); /* Intensità del nero sullo sfondo */
+            z-index: 0;
+        }
+
+        /* --- 2. CONTENITORE E LAYOUT --- */
+        .form-container {
+            position: relative;
+            z-index: 1;
+            background: transparent !important;
+            box-shadow: none !important;
+            padding: 25px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* --- 3. CARD APPUNTAMENTI (EFFETTO LUXURY GLASS) --- */
+        .booking-card {
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(12px); /* Effetto sfocato */
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(197, 160, 89, 0.15);
+            border-left: 4px solid var(--gold);
+            padding: 20px;
+            border-radius: 18px;
+            margin-bottom: 20px;
+            position: relative;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .booking-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--gold);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 18px;
+            right: 20px;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gold);
+            font-weight: bold;
+        }
+
+        .booking-date {
+            color: var(--gold);
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .booking-service {
+            font-size: 1rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        .booking-notes {
+            color: #777;
+            font-size: 0.75rem;
+            margin-top: 10px;
+            font-style: italic;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #555;
+            font-style: italic;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        /* Forza la centratura dei titoli sezione */
+        .section-label {
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body class="dark-page">
+    
+    <div class="form-container">
+        <nav class="top-nav" style="position: relative; padding: 0; display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+            <a href="index.html" class="btn-back">Indietro</a>
+            <a href="prenotazione.html" class="auth-trigger-btn" style="text-decoration: none;">Nuova Prenotazione</a>
+        </nav>
+
+        <h1 class="page-title" style="font-weight: 200; letter-spacing: 6px; text-align: center; margin-bottom: 40px;">I TUOI RITUALI</h1>
+
+        <div id="prossimi-appuntamenti">
+            <p class="section-label">Prossime Esperienze</p>
+            <div id="container-future">
+                <div class="empty-state">Ricerca appuntamenti...</div>
+            </div>
+        </div>
+
+        <div id="storico-appuntamenti">
+            <p class="section-label">Ultime 3 Visite</p>
+            <div id="container-past">
+                </div>
+        </div>
+
+    </div>
+
+    <script src="area-riservata.js"></script>
+</body>
+</html>

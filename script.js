@@ -25,9 +25,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     const authModal = document.getElementById('authModal');
     const authMessage = document.getElementById('authMessage');
     
-    // --- LOGICA A: CONTROLLO SESSIONE ---
+// --- LOGICA A: CONTROLLO SESSIONE (AGGIORNATA) ---
     const { data: { session } } = await _supabase.auth.getSession();
+    const btnArea = document.getElementById('openAuth'); // Recuperiamo il bottone
 
+    // Se l'utente è loggato, trasformiamo il bottone in "Diario"
+    if (session && btnArea) {
+        btnArea.innerText = "IL MIO DIARIO DI BELLEZZA";
+        btnArea.onclick = (e) => {
+            e.preventDefault();
+            window.location.href = 'area-riservata.html';
+        };
+    }
+
+    // Gestione reindirizzamenti per la pagina prenotazione
     if (isPrenotazionePage) {
         if (!session) {
             window.location.replace("index.html?auth=required");
@@ -42,14 +53,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+
     // --- LOGICA B: GESTIONE MODALE (APERTURA/CHIUSURA) ---
+// --- LOGICA B: GESTIONE MODALE (APERTURA/CHIUSURA) ---
     const openAuth = document.getElementById('openAuth');
     const closeAuth = document.getElementById('closeAuth');
 
-    if (openAuth) openAuth.onclick = () => authModal.style.setProperty('display', 'flex', 'important');
+    if (openAuth) {
+        openAuth.onclick = () => {
+            // Apriamo la modale SOLO se non c'è una sessione attiva
+            if (!session) {
+                authModal.style.setProperty('display', 'flex', 'important');
+            } else {
+                // Se è loggato, lo mandiamo al diario (protezione extra)
+                window.location.href = 'area-riservata.html';
+            }
+        };
+    }
     if (closeAuth) closeAuth.onclick = () => authModal.style.display = 'none';
 
-    // --- LOGICA C: LOGIN ---
+
+    // --- LOGICA C: LOGIN (AGGIORNATA) ---
     const btnLogin = document.getElementById('btnLogin');
     if (btnLogin) {
         btnLogin.onclick = async (e) => {
@@ -62,15 +86,26 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (error) {
                 alert("Errore: " + error.message);
             } else {
+                // Trasformazione immediata del bottone
+                const btnArea = document.getElementById('openAuth');
+                if (btnArea) {
+                    btnArea.innerText = "IL MIO DIARIO DI BELLEZZA";
+                    btnArea.onclick = () => window.location.href = 'area-riservata.html';
+                }
+
+                // Chiudi modal e vai alla pagina corretta
                 const params = new URLSearchParams(window.location.search);
                 if (params.get('auth') === 'required') {
                     window.location.href = "prenotazione.html";
                 } else {
-                    window.location.reload();
+                    window.location.href = "area-riservata.html";
                 }
             }
         };
     }
+
+
+
 
 // --- NOVITÀ: LOGICA RESET PASSWORD ---
     const btnReset = document.getElementById('btnResetPassword');

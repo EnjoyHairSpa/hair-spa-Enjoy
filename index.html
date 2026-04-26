@@ -99,5 +99,24 @@
 
 
     <script src="script.js"></script>
+
+    <script>
+        // Controllo immediato al caricamento della home
+        document.addEventListener('DOMContentLoaded', async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            const btnArea = document.getElementById('openAuth');
+
+            if (user) {
+                // Se l'utente è loggato, trasformiamo il bottone
+                btnArea.innerText = "IL MIO DIARIO DI BELLEZZA";
+                
+                // Rimuoviamo l'apertura della modal e mettiamo il link diretto
+                btnArea.onclick = function() {
+                    window.location.href = 'area-riservata.html';
+                };
+            }
+        });
+    </script>
+
 </body>
 </html>
