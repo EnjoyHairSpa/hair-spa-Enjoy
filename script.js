@@ -72,6 +72,30 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
     }
 
+// --- NOVITÀ: LOGICA RESET PASSWORD ---
+    const btnReset = document.getElementById('btnResetPassword');
+    if (btnReset) {
+        btnReset.onclick = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('authEmail').value;
+
+            if (!email) {
+                alert("Per favore, inserisci la tua email nel campo Login per richiedere il reset.");
+                return;
+            }
+
+            const { error } = await _supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: window.location.origin + '/reset-password.html',
+            });
+
+            if (error) {
+                alert("Errore: " + error.message);
+            } else {
+                alert("Link di reset inviato! Controlla la tua email.");
+            }
+        };
+    }
+
     // --- NOVITÀ: LOGICA D: REGISTRAZIONE (Inserita subito dopo il Login) ---
     const btnDoRegister = document.getElementById('btnDoRegister');
     if (btnDoRegister) {
