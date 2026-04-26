@@ -8,13 +8,37 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.location.href = "index.html";
         return;
     }
+    
+    // Carica i dati iniziali
     caricaPrenotazioni(user.id);
+    
+    // ATTIVA IL REALTIME: resta in ascolto di cambiamenti nel DB
+    attivaAscoltoRealtime(user.id);
 });
+
+// Funzione Magica Realtime
+function attivaAscoltoRealtime(userId) {
+    _supabase
+        .channel('cambiamenti-prenotazioni') // Nome del canale a scelta
+        .on(
+            'postgres_changes', 
+            { 
+                event: '*', // Ascolta inserimenti, aggiornamenti e cancellazioni
+                schema: 'public', 
+                table: 'bookings',
+                filter: `cliente_id=eq.${userId}` // Ascolta solo i cambiamenti dell'utente loggato
+            }, 
+            (payload) => {
+                console.log('Cambio di stato rilevato in tempo reale!', payload);
+                caricaPrenotazioni(userId); // Ricarica la lista non appena riceve la notizia
+            }
+        )
+        .subscribe();
+}
 
 async function caricaPrenotazioni(userId) {
     const oraAttuale = new Date().toISOString();
 
-    // Recuperiamo tutte le prenotazioni del cliente
     const { data: tutte, error } = await _supabase
         .from('bookings')
         .select(`
@@ -29,15 +53,10 @@ async function caricaPrenotazioni(userId) {
         return;
     }
 
-    // --- LOGICA DI RAGGRUPPAMENTO ---
-    // Creiamo un oggetto dove la chiave è la data_ora (es. "2023-10-25 15:00")
     const raggruppate = tutte.reduce((acc, b) => {
         const chiave = b.data_ora;
         if (!acc[chiave]) {
-            acc[chiave] = {
-                ...b,
-                servizi: [] // Array per contenere tutti i nomi dei servizi
-            };
+            acc[chiave] = { ...b, servizi: [] };
         }
         if (b.services?.nome_servizio) {
             acc[chiave].servizi.push(b.services.nome_servizio);
@@ -45,10 +64,8 @@ async function caricaPrenotazioni(userId) {
         return acc;
     }, {});
 
-    // Trasformiamo l'oggetto in un array
     const listaRaggruppata = Object.values(raggruppate);
 
-    // Dividiamo in Future e Passate
     const future = listaRaggruppata.filter(b => b.data_ora >= oraAttuale && (b.stato === 'in_attesa' || b.stato === 'confermata'));
     const passate = listaRaggruppata.filter(b => b.data_ora < oraAttuale && b.stato === 'confermata').slice(0, 3);
 
@@ -69,8 +86,6 @@ function renderizzaLista(lista, elementId, messaggioVuoto) {
         const isConfermata = b.stato === 'confermata';
         const icona = isConfermata ? '✓' : '⌛';
         const testoStato = isConfermata ? 'Confermato' : 'In attesa di conferma';
-        
-        // Uniamo i servizi con un "+" o una virgola
         const nomiServizi = b.servizi.length > 0 ? b.servizi.join(' + ') : 'Servizio personalizzato';
 
         return `
