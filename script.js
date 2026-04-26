@@ -84,10 +84,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return;
             }
 
-            const { error } = await _supabase.auth.resetPasswordForEmail(email, {
-                redirectTo: window.location.origin + '/reset-password.html',
-            });
-
+// Cambia questa parte:
+const { error } = await _supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: 'https://enjoyhairspa.github.io/hair-spa-Enjoy/reset-password.html',
+});
             if (error) {
                 alert("Errore: " + error.message);
             } else {
