@@ -38,7 +38,7 @@
         }
         .arrow { transition: transform 0.3s; color: var(--gold); }
 
-        /* NUOVO STILE NOTE LUXURY */
+        /* NUOVO STILE NOTE LUXURY (Uniformato a Percorsi) */
         .textarea-luxury {
             width: 100%;
             background: rgba(255, 255, 255, 0.03);
@@ -76,16 +76,6 @@
             box-sizing: border-box;
         }
         .input-luxury:focus { border-color: var(--gold); outline: none; }
-        
-        .section-luxury-label {
-            color: var(--gold); 
-            font-size: 0.85rem; 
-            text-align: center; 
-            line-height: 1.6; 
-            font-style: italic; 
-            padding: 0 10px;
-            margin-bottom: 20px;
-        }
     </style>
 </head>
 <body class="dark-page">
@@ -99,11 +89,7 @@
 
         <form id="prenotazioneForm">
             
-            <p class="section-luxury-label">
-                Consigliamo di prenotare la consulenza per la prima visita in salone per decidere insieme i servizi più adatti alle tue esigenze.
-            </p>
-
-            <div class="consulenza-box" style="display: none !important;">
+            <div class="consulenza-box">
                 <div>
                     <strong style="color: var(--gold); display: block; font-size: 0.9rem; letter-spacing: 1px;">Consulenza Sensoriale</strong>
                     <small style="color: #777;">Analisi cute e capelli (Consigliata)</small>
@@ -111,22 +97,20 @@
                 <input type="checkbox" id="consulenza" name="consulenza" style="width: 22px; height: 22px; accent-color: var(--gold); cursor: pointer;">
             </div>
 
-            <p class="section-label" style="font-size: 0.7rem; letter-spacing: 2px; text-align: center; margin-bottom: 15px;">CREA IL TUO RITUALE BELLEZZA</p>
+            <p class="section-label" style="font-size: 0.7rem; letter-spacing: 2px;">SELEZIONA I SERVIZI (Uno per categoria)</p>
             
             <div id="servizi-dinamici">
-                <p style="color: var(--gold); opacity: 0.6; text-align: center; font-size: 0.85rem; font-style: italic; padding: 20px;">
-                    Componendo il tuo rituale di bellezza...
-                </p>
+                <p style="color: white; opacity: 0.5; text-align: center; font-size: 0.8rem;">Componendo il tuo rituale...</p>
             </div>
 
-            <p class="section-label" style="margin-top: 35px; font-size: 0.7rem; letter-spacing: 2px; text-align: center;">DATA E ORA</p>
-            <div class="input-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+            <p class="section-label" style="margin-top: 35px; font-size: 0.7rem; letter-spacing: 2px;">DATA E ORA</p>
+            <div class="input-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                 <div>
-                    <label style="color: #666; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 1px;">Giorno</label>
+                    <label style="color: #666; font-size: 0.6rem; text-transform: uppercase;">Giorno</label>
                     <input type="date" id="data" name="data" class="input-luxury" required>
                 </div>
                 <div>
-                    <label style="color: #666; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 1px;">Orario</label>
+                    <label style="color: #666; font-size: 0.6rem; text-transform: uppercase;">Orario</label>
                     <input type="time" id="orario" name="orario" class="input-luxury" required>
                 </div>
             </div>

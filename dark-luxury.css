@@ -1,13 +1,12 @@
-/* --- 1. VARIABILI E BASE --- */
+/* --- VARIABILI E BASE --- */
 :root {
-    --bg-color: #000000;
-    --container-bg: #0d0d0d;
+    --bg-color: #0d0d0d;
+    --container-bg: #1a1a1a;
     --text-primary: #f2f2f2;
     --text-secondary: #a6a6a6;
-    --gold: #c5a059; /* Bronzo Luxury */
-    --gold-bright: #e2c28d;
-    --gold-dim: rgba(197, 160, 89, 0.2);
-    --border-color: #222222;
+    --accent-bronze: #c5a059;
+    --gold: #c5a059;
+    --border-color: #333333;
     --font-family: 'Inter', sans-serif;
 }
 
@@ -16,222 +15,77 @@ body {
     color: var(--text-primary);
     font-family: var(--font-family);
     margin: 0;
-    overflow-x: hidden;
 }
 
-/* --- 2. TOP NAVIGATION (NAVIGAZIONE ALTA) --- */
-.top-nav {
-    position: absolute;
-    top: 0;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    padding: 25px;
-    z-index: 100;
-    box-sizing: border-box;
-}
-
-.auth-trigger-btn, .view-settings {
-    background: rgba(0, 0, 0, 0.6);
-    border: 1px solid var(--gold);
-    color: var(--gold);
-    padding: 10px 20px;
-    border-radius: 50px;
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    cursor: pointer;
-    backdrop-filter: blur(10px);
-    transition: 0.3s;
-}
-
-.auth-trigger-btn:hover {
-    background: var(--gold);
-    color: #000;
-}
-
-/* --- 3. GATEWAY CONTAINER (APP STYLE VERTICAL CARD) --- */
-.gateway-container {
-    display: flex;
-    flex-direction: column; /* Card impilate verticalmente per mobile luxury */
-    height: 100vh;
+/* --- GATEWAY (HOME) - SISTEMAZIONE CARD --- */
+.gateway-container { 
+    display: flex; 
+    height: 100vh; 
     width: 100vw;
-    background: #000;
 }
 
-.luxury-card {
-    flex: 1;
-    position: relative;
-    background-size: cover;
+.card {
+    flex: 1; 
+    background-size: cover; 
     background-position: center;
-    transition: flex 0.7s cubic-bezier(0.25, 1, 0.3, 1);
-    display: flex;
-    align-items: flex-end;
+    display: flex; 
+    transition: flex 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    position: relative;
     overflow: hidden;
 }
 
-.luxury-card:hover {
-    flex: 1.4; /* Espansione elegante al tocco/hover */
-}
+.card:hover { flex: 1.5; }
 
-.card-overlay {
-    width: 100%;
-    padding: 40px 30px;
-    background: linear-gradient(to top, 
-        rgba(0,0,0,1) 0%, 
-        rgba(0,0,0,0.7) 40%, 
-        transparent 100%);
-    box-sizing: border-box;
-}
-
-.card-subtitle {
-    color: var(--gold);
-    text-transform: uppercase;
-    letter-spacing: 4px;
-    font-size: 0.65rem;
-    display: block;
-    margin-bottom: 8px;
-    opacity: 0.9;
-}
-
-.card-title {
-    font-size: 2rem;
-    font-weight: 200;
-    margin: 0;
-    letter-spacing: 1px;
-    color: #fff;
-    text-transform: uppercase;
-}
-
-.card-text {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    margin: 10px 0 25px 0;
-    font-weight: 300;
-    max-width: 80%;
-}
-
-/* --- 4. BOTTONE ELEGANTE (BRONZO) --- */
-.elegant-btn {
-    display: inline-block;
-    padding: 16px 40px;
-    border: 1px solid var(--gold);
-    color: var(--gold);
-    text-decoration: none;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    font-size: 0.75rem;
-    border-radius: 50px;
-    transition: all 0.4s ease;
-    background: rgba(197, 160, 89, 0.05);
-    text-align: center;
-}
-
-.elegant-btn:hover {
-    background: var(--gold);
-    color: #000;
-    box-shadow: 0 10px 25px rgba(197, 160, 89, 0.3);
-    transform: translateY(-2px);
-}
-
-/* --- 5. MODALE DI AUTENTICAZIONE (CORAZZATA) --- */
-.modal-overlay {
-    position: fixed !important;
-    inset: 0 !important;
-    background: rgba(0, 0, 0, 0.92) !important;
-    backdrop-filter: blur(15px);
-    display: none; /* Gestito dal JS */
-    justify-content: center;
+.overlay {
+    background: rgba(0, 0, 0, 0.5); 
+    width: 100%; 
+    height: 100%;
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
     align-items: center;
-    z-index: 99999;
+    transition: background 0.4s;
 }
 
-.modal-content {
-    background: linear-gradient(145deg, #161616 0%, #000000 100%) !important;
-    border: 1px solid rgba(197, 160, 89, 0.4) !important;
-    padding: 45px 35px !important;
-    border-radius: 25px !important;
-    width: 90%;
-    max-width: 380px;
-    text-align: center;
-    position: relative;
-    box-shadow: 0 25px 60px rgba(0,0,0,0.9);
-}
+.card:hover .overlay { background: rgba(0, 0, 0, 0.3); }
 
-.auth-input {
-    width: 100%;
-    padding: 16px;
-    margin-bottom: 15px;
-    background: #080808 !important;
-    border: 1px solid #222 !important;
-    color: #fff !important;
-    border-radius: 12px !important;
-    font-size: 1rem;
-    box-sizing: border-box;
-    transition: border-color 0.3s;
-}
-
-.auth-input:focus {
-    border-color: var(--gold) !important;
-    outline: none;
-}
-
-.auth-message {
-    margin-top: 20px;
-    font-size: 0.8rem;
-    color: var(--gold);
-    letter-spacing: 1px;
-}
-
-.close-btn {
-    position: absolute;
-    top: 20px;
-    right: 25px;
-    color: #444;
-    font-size: 26px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.close-btn:hover { color: var(--gold); }
-
-/* --- 6. BOX VINCOLI (PERCORSI) --- */
+/* --- BOX VINCOLI ELEGANTE --- */
 .vincolo-luxury-box {
-    background: linear-gradient(145deg, #1a1a1a 0%, #050505 100%);
-    border: 1px solid rgba(197, 160, 89, 0.2);
-    padding: 30px;
-    border-radius: 20px;
-    margin-bottom: 35px;
+    background: linear-gradient(145deg, rgba(26,26,26,1) 0%, rgba(10,10,10,1) 100%);
+    border: 1px solid rgba(197, 160, 89, 0.3);
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 30px;
     text-align: center;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
 .vincolo-title {
     color: var(--gold);
     font-size: 0.7rem;
-    letter-spacing: 4px;
+    letter-spacing: 3px;
     text-transform: uppercase;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     display: block;
 }
 
 .vincolo-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 25px;
+    gap: 20px;
 }
 
 .vincolo-item {
     border-left: 1px solid var(--gold);
-    padding-left: 20px;
+    padding-left: 15px;
     text-align: left;
 }
 
 .vincolo-number {
     display: block;
-    font-size: 1.6rem;
+    font-size: 1.4rem;
     color: white;
-    font-weight: 200;
+    font-weight: 300;
 }
 
 .vincolo-desc {
@@ -241,32 +95,28 @@ body {
     letter-spacing: 1px;
 }
 
-/* --- 7. ACCORDION SERVIZI --- */
-.accordion-item {
-    border-bottom: 1px solid #1a1a1a;
-    margin-bottom: 5px;
-}
-
-.cat-title {
+/* --- RESTO DELLO STILE PERCORSI --- */
+.form-container {
+    max-width: 450px;
+    margin: 40px auto;
     padding: 20px;
+}
+
+.page-title {
+    text-align: center;
     color: var(--gold);
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    font-size: 0.85rem;
+    letter-spacing: 5px;
+    font-weight: 200;
+    margin-bottom: 30px;
 }
 
-.radio-item {
-    padding: 15px 20px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    color: var(--text-secondary);
-    cursor: pointer;
+.main-btn {
+    width: 100%; padding: 18px; background: transparent;
+    border: 1px solid var(--gold); color: var(--gold);
+    text-transform: uppercase; letter-spacing: 2px; cursor: pointer;
+    transition: 0.4s; margin-top: 20px;
 }
 
-.radio-item input[type="radio"] {
-    accent-color: var(--gold);
-}
+.main-btn:hover:not(:disabled) { background: var(--gold); color: black; }
+.main-btn:disabled { opacity: 0.3; cursor: not-allowed; }
