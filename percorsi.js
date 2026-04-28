@@ -1,33 +1,42 @@
+// 1. CONFIGURAZIONE SUPABASE
 const SUPABASE_URL = 'https://ashctxmmjrjgmakuzpjy.supabase.co'; 
 const SUPABASE_KEY = 'sb_publishable_eSsDyQAkrJZ_kiKnY27Idw_Fn6uQt2t';
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// --- GENERATORE CODICE UNIVOCO ---
+function generaCodiceCloud() {
+    const caratteri = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let risultato = '';
+    for (let i = 0; i < 6; i++) {
+        risultato += caratteri.charAt(Math.floor(Math.random() * caratteri.length));
+    }
+    return `NS-${risultato}`; 
+}
 
-// helper per fomrattazione Whatsapp
+// --- HELPER PER WHATSAPP ---
 const PercorsiHelper = {
     formatWA(data) {
-        const { nome, cognome, email, selezioni, dataVal, oraVal, note } = data;
+        const { nome, cognome, email, telefono, selezioni, dataVal, oraVal, note } = data;
         
-        // Formattazione lista servizi con quantità (es: • 3x Piega Gloss)
         const listaServizi = selezioni
             .map(s => `  • ${s.qty}x ${s.servizio}`)
             .join('\n');
 
-        const testo = `✨ *NUOVA RICHIESTA PERCORSO* ✨\n\n` +
+        const testo = `✨ *NUOVA RICHIESTA PERCORSO ENJOY* ✨\n\n` +
                       `👤 *Cliente:* ${nome} ${cognome}\n` +
+                      `📞 *Tel. Registrato:* ${telefono || 'Non indicato'}\n` +
                       `📧 *Email:* ${email}\n\n` +
                       `📅 *Data inizio desiderata:* ${dataVal}\n` +
                       `⏰ *Ora:* ${oraVal}\n\n` +
                       `💇‍♀️ *Servizi nel Percorso:*\n${listaServizi}\n\n` +
                       (note ? `📝 *Note:* _${note}_\n` : "") +
-                      `\n_Richiesta inviata dall'App Luxury_`;
+                      `\n_Richiesta inviata con eleganza dall'App Luxury_`;
 
         return encodeURIComponent(testo);
     },
 
     async invia(supabase, { session, profilo, record, numeroWA, dataVal, oraVal, noteVal, selezioni }) {
-        
-        // 1. Salva su Supabase (Tabella richieste_percorsi)
+        // 1. Salva su Supabase
         const { error } = await supabase.from('richieste_percorsi').insert([record]);
         if (error) throw new Error("Errore database: " + error.message);
 
@@ -36,6 +45,7 @@ const PercorsiHelper = {
             nome: profilo.nome || "Cliente",
             cognome: profilo.cognome || "",
             email: profilo.email || session.user.email,
+            telefono: profilo.telefono || "", // Telefono aggiunto qui
             selezioni: selezioni,
             dataVal,
             oraVal,
@@ -55,20 +65,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     const msg = document.getElementById('percorsoMessage');
     const btnRichiedi = document.getElementById('btnRichiedi');
 
+    // --- CONTROLLO LOGIN ---
     const { data: { session } } = await _supabase.auth.getSession();
-    if (!session) { window.location.href = "index.html?auth=required";
-    return; }
+    if (!session) { 
+        window.location.href = "index.html?auth=required";
+        return; 
+    }
 
     btnRichiedi.disabled = true;
     btnRichiedi.style.opacity = "0.5";
 
-    //const { data: profilo } = await _supabase.from('profiles').select('nome').eq('id', session.user.id).single();
-    const { data: profilo } = await _supabase.from('profiles').select('nome, cognome, email').eq('id', session.user.id).single();
-    if (profilo) welcomeUser.innerText = `Benvenuta, ${profilo.nome}`;
+    // --- RECUPERO PROFILO (con Telefono) ---
+    const { data: profilo } = await _supabase
+        .from('profiles')
+        .select('nome, cognome, email, telefono')
+        .eq('id', session.user.id)
+        .single();
 
+    if (profilo && welcomeUser) welcomeUser.innerText = `Benvenuta, ${profilo.nome}`;
+
+    // --- CARICAMENTO SERVIZI ---
     const { data: servizi } = await _supabase.from('services').select('*').order('categoria');
     
-    if (servizi) {
+    if (servizi && extraContainer) {
         extraContainer.innerHTML = "";
         const categorie = [...new Set(servizi.map(s => s.categoria))];
 
@@ -104,7 +123,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const isHidden = content.style.display === "none";
                 content.style.display = isHidden ? "block" : "none";
                 title.querySelector('.arrow').style.transform = isHidden ? "rotate(180deg)" : "rotate(0deg)";
-                title.style.color = isHidden ? "var(--gold)" : "white";
             };
 
             catWrapper.appendChild(title);
@@ -113,6 +131,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    // --- LOGICA VALIDAZIONE ---
     const validaPercorso = () => {
         let totalePieghe = 0;
         document.querySelectorAll('.qty-piega').forEach(input => totalePieghe += parseInt(input.value) || 0);
@@ -132,15 +151,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     extraContainer.addEventListener('input', validaPercorso);
 
+    // --- INVIO FORM ---
     form.onsubmit = async (e) => {
         e.preventDefault();
         
-        // UI Feedback
         btnRichiedi.disabled = true;
         btnRichiedi.innerText = "REGISTRAZIONE...";
-        msg.innerText = "ATTENDI...";
 
-        // 1. RACCOLTA DATI
         const selezioni = [];
         document.querySelectorAll('input[name="servizio-qty"]').forEach(input => {
             if (parseInt(input.value) > 0) {
@@ -157,7 +174,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const noteVal = document.getElementById('note').value;
 
         try {
-            // 2. PREPARAZIONE RECORD PER DB
+            const codiceUnivoco = generaCodiceCloud(); 
+            
             const record = {
                 cliente_id: session.user.id,
                 dettagli_percorso: {
@@ -165,33 +183,29 @@ document.addEventListener('DOMContentLoaded', async () => {
                     data_inizio: dataVal,
                     ora_inizio: oraVal
                 },
-                note: noteVal // Assicurati di aver aggiunto la colonna 'note' nel DB!
+                note: noteVal,
+                cloud_request_id: codiceUnivoco // Salvataggio codice univoco
             };
 
-            // 3. INVIO TRAMITE HELPER (DB + WHATSAPP)
             await PercorsiHelper.invia(_supabase, {
                 session,
-                profilo: profilo || { nome: "Cliente", email: session.user.email },
+                profilo: profilo || { nome: "Cliente", email: session.user.email, telefono: "" },
                 record,
-                numeroWA: "390952165888", // Lo stesso numero delle prenotazioni
+                numeroWA: "390952165888",
                 dataVal,
                 oraVal,
-                noteVal,
+                note: noteVal,
                 selezioni
             });
 
-            // 4. SUCCESSO
             msg.innerText = "RITUALE RICHIESTO! TI CONTATTEREMO.";
             msg.style.color = "var(--gold)";
             
-            setTimeout(() => {
-                window.location.href = "index.html";
-            }, 2500);
+            setTimeout(() => { window.location.href = "index.html"; }, 2500);
 
         } catch (error) {
             console.error(error);
             msg.innerText = "ERRORE DURANTE L'INVIO";
-            msg.style.color = "#ff4444";
             btnRichiedi.disabled = false;
             btnRichiedi.innerText = "CONFERMA PERCORSO";
         }
