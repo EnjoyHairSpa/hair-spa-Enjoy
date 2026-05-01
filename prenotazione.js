@@ -97,13 +97,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <div class="cat-content" style="display:none; padding:15px;"></div>
             `;
             const content = wrapper.querySelector('.cat-content');
-            servizi.filter(s => s.categoria === cat).forEach(s => {
-                content.innerHTML += `
-                    <label class="radio-item">
-                        <span>${s.nome_servizio}</span>
-                        <input type="radio" name="${cat}" value="${s.nome_servizio}" data-id="${s.id}">
-                    </label>`;
-            });
+servizi.filter(s => s.categoria === cat).forEach(s => {
+    content.innerHTML += `
+        <label class="radio-item">
+            <span>${s.nome_servizio}</span>
+            <input type="radio" name="${cat}" value="${s.nome_servizio}" 
+                   data-id="${s.id}" 
+                   data-guid="${s.guid_locale || ''}"> 
+        </label>`;            });
             wrapper.querySelector('.cat-title').onclick = () => {
                 const isHidden = content.style.display === "none";
                 content.style.display = isHidden ? "block" : "none";
@@ -137,15 +138,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const dataOraISO = `${dataVal}T${oraVal}:00`;
                 const codiceUnivoco = generaCodiceCloud();
 
-                const righe = Array.from(selectedRadios).map(radio => ({
-                    cliente_id: session.user.id,
-                    servizio_id: parseInt(radio.dataset.id),
-                    data_ora: dataOraISO,
-                    note: noteVal,
-                    cloud_request_id: codiceUnivoco 
-                }));
-
-                const bookingData = {
+const righe = Array.from(selectedRadios).map(radio => ({
+    cliente_id: session.user.id,
+    servizio_id: parseInt(radio.dataset.id),
+    guid_locale: radio.dataset.guid, // <--- AGGIUNGI QUESTA RIGA
+    data_ora: dataOraISO,
+    note: noteVal,
+    cloud_request_id: codiceUnivoco 
+}));                const bookingData = {
                     session,
                     profilo: profilo || { nome: "Cliente", email: session.user.email, telefono: "" },
                     righe,
