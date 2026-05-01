@@ -25,15 +25,22 @@ export const BookingHelper = {
      * Esegue il salvataggio su Supabase e apre WhatsApp
      */
     async invia(supabase, { session, profilo, righe, numeroWA, dataVal, oraVal, noteVal, nomiServizi }) {
+        
+        // --- DEBUG: CONTROLLO DATI PRIMA DELL'INVIO ---
+        // Se guid_locale è vuoto nella console, il problema è dove componi l'array 'righe'
+        console.log("Dati in invio a Supabase (Tabella bookings):");
+        console.table(righe); 
+        // ----------------------------------------------
+
         // 1. Inserimento nel Database (Tabella bookings)
         const { error } = await supabase.from('bookings').insert(righe);
         
         if (error) {
-            console.error("Errore Database:", error);
+            console.error("Errore Database Supabase:", error);
             throw new Error("Impossibile salvare nel database: " + error.message);
         }
 
-        // 2. Preparazione dati per il messaggio
+        // 2. Preparazione dati per il messaggio WhatsApp
         const messaggio = this.formatWA({
             nome: profilo.nome || "Cliente",
             cognome: profilo.cognome || "",
