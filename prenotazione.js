@@ -1,7 +1,6 @@
-// 1. CONFIGURAZIONE SUPABASE
-const SUPABASE_URL = 'https://ashctxmmjrjgmakuzpjy.supabase.co'; 
-const SUPABASE_KEY = 'sb_publishable_eSsDyQAkrJZ_kiKnY27Idw_Fn6uQt2t'; 
-const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+
+
 
 // --- GENERATORE CODICE UNIVOCO ---
 function generaCodiceCloud() {
@@ -14,7 +13,7 @@ function generaCodiceCloud() {
 }
 
 // --- HELPER PER INVIO E WHATSAPP ---
-const BookingHelper = {
+window.BookingHelper = window.BookingHelper || {
     formatWA(data) {
         const { nome, cognome, email, telefono, servizi, dataVal, oraVal, note } = data;
         
@@ -23,14 +22,14 @@ const BookingHelper = {
             .join('\n');
 
         const testo = `✨ *NUOVA PRENOTAZIONE ENJOY* ✨\n\n` +
-                      `👤 *Cliente:* ${nome} ${cognome}\n` +
-                      `📞 *Tel. Registrato:* ${telefono || 'Non indicato'}\n` +
-                      `📧 *Email:* ${email}\n\n` +
-                      `📅 *Data:* ${dataVal}\n` +
-                      `⏰ *Ora:* ${oraVal}\n\n` +
-                      `💇‍♂️ *Servizi richiesti:*\n${listaServizi}\n\n` + 
-                      (note ? `📝 *Note:* _${note}_\n` : "") +
-                      `\n_Inviato con eleganza dall'App Luxury_`;
+                    `👤 *Cliente:* ${nome} ${cognome}\n` +
+                    `📞 *Tel. Registrato:* ${telefono || 'Non indicato'}\n` +
+                    `📧 *Email:* ${email}\n\n` +
+                    `📅 *Data:* ${dataVal}\n` +
+                    `⏰ *Ora:* ${oraVal}\n\n` +
+                    `💇‍♂️ *Servizi richiesti:*\n${listaServizi}\n\n` + 
+                    (note ? `📝 *Note:* _${note}_\n` : "") +
+                    `\n_Inviato con eleganza dall'App Luxury_`;
 
         return encodeURIComponent(testo);
     },
@@ -57,6 +56,8 @@ const BookingHelper = {
         return true;
     }
 };
+
+window.BookingHelper = window.BookingHelper || BookingHelper;
 
 // 3. LOGICA DELLA PAGINA (PULITA E UNITA)
 document.addEventListener('DOMContentLoaded', async () => {
@@ -87,50 +88,51 @@ document.addEventListener('DOMContentLoaded', async () => {
         container.innerHTML = "";
         const categorie = [...new Set(servizi.map(s => s.categoria))];
         
-categorie.forEach(cat => {
-    const wrapper = document.createElement('div');
-    wrapper.className = 'accordion-item';
-    wrapper.innerHTML = `
-        <div class="cat-title">
-            <span>${cat}</span> <span class="arrow">▼</span>
-        </div>
-        <div class="cat-content" style="display:none; padding:15px;"></div>
-    `;
-    const content = wrapper.querySelector('.cat-content');
+        categorie.forEach(cat => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'accordion-item';
+            wrapper.innerHTML = `
+                <div class="cat-title">
+                    <span>${cat}</span> <span class="arrow">▼</span>
+                </div>
+                <div class="cat-content" style="display:none; padding:15px;"></div>
+            `;
+            const content = wrapper.querySelector('.cat-content');
 
-    servizi.filter(s => s.categoria === cat).forEach(s => {
-        content.innerHTML += `
-            <label class="radio-item">
-                <span>${s.nome_servizio}</span>
-                <input type="radio" name="${cat}" value="${s.nome_servizio}" 
-                       data-id="${s.id}" 
-                       data-guid="${s.guid_locale || ''}"> 
-            </label>`;
-    });
-
-    wrapper.querySelector('.cat-title').onclick = () => {
-        const isHidden = content.style.display === "none";
-        content.style.display = isHidden ? "block" : "none";
-        wrapper.querySelector('.arrow').style.transform = isHidden ? "rotate(180deg)" : "rotate(0deg)";
-    };
-
-    // Permette di deselezionare un radio ricliccandoci sopra
-    content.querySelectorAll('input[type="radio"]').forEach(radio => {
-        radio.addEventListener('click', function() {
-            if (this._eraSelezionato) {
-                this.checked = false;
-            }
-        });
-        radio.addEventListener('change', function() {
-            content.querySelectorAll(`input[name="${this.name}"]`).forEach(r => {
-                r._eraSelezionato = false;
+            servizi.filter(s => s.categoria === cat).forEach(s => {
+                content.innerHTML += `
+                    <label class="radio-item">
+                        <span>${s.nome_servizio}</span>
+                        <input type="radio" name="${cat}" value="${s.nome_servizio}" 
+                               data-id="${s.id}" 
+                               data-guid="${s.guid_locale || ''}"> 
+                    </label>`;
             });
-            this._eraSelezionato = this.checked;
-        });
-    });
 
-    container.appendChild(wrapper);
-});    }
+            wrapper.querySelector('.cat-title').onclick = () => {
+                const isHidden = content.style.display === "none";
+                content.style.display = isHidden ? "block" : "none";
+                wrapper.querySelector('.arrow').style.transform = isHidden ? "rotate(180deg)" : "rotate(0deg)";
+            };
+
+            // Permette di deselezionare un radio ricliccandoci sopra
+            content.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.addEventListener('click', function() {
+                    if (this._eraSelezionato) {
+                        this.checked = false;
+                    }
+                });
+                radio.addEventListener('change', function() {
+                    content.querySelectorAll(`input[name="${this.name}"]`).forEach(r => {
+                        r._eraSelezionato = false;
+                    });
+                    this._eraSelezionato = this.checked;
+                });
+            });
+
+            container.appendChild(wrapper);
+        }); 
+    }
 
     // --- GESTIONE INVIO FORM ---
     const form = document.getElementById('prenotazioneForm');
@@ -156,14 +158,16 @@ categorie.forEach(cat => {
                 const dataOraISO = `${dataVal}T${oraVal}:00`;
                 const codiceUnivoco = generaCodiceCloud();
 
-const righe = Array.from(selectedRadios).map(radio => ({
-    cliente_id: session.user.id,
-    servizio_id: parseInt(radio.dataset.id),
-    guid_locale: radio.dataset.guid, // <--- AGGIUNGI QUESTA RIGA
-    data_ora: dataOraISO,
-    note: noteVal,
-    cloud_request_id: codiceUnivoco 
-}));                const bookingData = {
+                const righe = Array.from(selectedRadios).map(radio => ({
+                    cliente_id: session.user.id,
+                    servizio_id: parseInt(radio.dataset.id),
+                    guid_locale: radio.dataset.guid,
+                    data_ora: dataOraISO,
+                    note: noteVal,
+                    cloud_request_id: codiceUnivoco 
+                }));
+
+                const bookingData = {
                     session,
                     profilo: profilo || { nome: "Cliente", email: session.user.email, telefono: "" },
                     righe,
@@ -174,7 +178,7 @@ const righe = Array.from(selectedRadios).map(radio => ({
                     nomiServizi: Array.from(selectedRadios).map(r => r.value).join(", ")
                 };
 
-                await BookingHelper.invia(_supabase, bookingData);
+                await window.BookingHelper.invia(_supabase, bookingData);
                 
                 // Feedback successo
                 btn.innerText = "INVIATO!";
