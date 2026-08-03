@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Carica i dati iniziali
     caricaPrenotazioni(user.id);
+    inizializzaPushNotifiche(_supabase, user.id);
     
     // ATTIVA IL REALTIME: resta in ascolto di cambiamenti nel DB
     attivaAscoltoRealtime(user.id);
