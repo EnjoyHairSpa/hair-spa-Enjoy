@@ -16,31 +16,65 @@ function urlBase64ToUint8Array(base64String) {
     return outputArray;
 }
 
-// Punto di ingresso: da chiamare dopo che sappiamo che l'utente è loggato
-async function inizializzaPushNotifiche(supabaseClient, profileId) {
-    // Se il browser non supporta le notifiche push, usciamo silenziosamente
+// Da chiamare al caricamento pagina: registra il service worker (senza chiedere permessi)
+// e decide se mostrare il bottone "Attiva notifiche", nasconderlo o disabilitarlo.
+async function impostaPulsanteNotifiche(supabaseClient, profileId) {
+    const btn = document.getElementById('btnAttivaNotifiche');
+    if (!btn) return;
+
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
         console.log('Push non supportate su questo browser.');
+        btn.style.display = 'none';
         return;
     }
 
     try {
         const registration = await navigator.serviceWorker.register('sw.js');
 
-        // Se il permesso è già stato negato in passato, non richiediamolo di nuovo
         if (Notification.permission === 'denied') {
-            console.log('Notifiche negate dall\'utente in precedenza.');
+            btn.innerText = '🔕 Notifiche bloccate (abilita dalle impostazioni del browser)';
+            btn.disabled = true;
             return;
         }
 
-        // Chiede il permesso (mostra il popup nativo del browser/telefono)
+        if (Notification.permission === 'granted') {
+            const subscription = await registration.pushManager.getSubscription();
+            if (subscription) {
+                // Già tutto attivo, nascondiamo il bottone
+                btn.style.display = 'none';
+                return;
+            }
+            // Permesso già concesso ma manca la subscription: può ripartire senza nuovo popup
+            btn.innerText = '🔔 Attiva Notifiche';
+            btn.addEventListener('click', () => avviaSottoscrizionePush(supabaseClient, profileId, registration));
+            return;
+        }
+
+        // Notification.permission === 'default': serve il click dell'utente per chiedere il permesso
+        btn.innerText = '🔔 Attiva Notifiche';
+        btn.addEventListener('click', () => richiediPermessoEIscrivi(supabaseClient, profileId, registration));
+
+    } catch (err) {
+        console.error('Errore impostazione pulsante notifiche:', err);
+    }
+}
+
+// Chiamata SOLO dal click del bottone: qui il permesso può essere richiesto
+async function richiediPermessoEIscrivi(supabaseClient, profileId, registration) {
+    try {
         const permesso = await Notification.requestPermission();
         if (permesso !== 'granted') {
             console.log('Permesso notifiche non concesso.');
             return;
         }
+        await avviaSottoscrizionePush(supabaseClient, profileId, registration);
+    } catch (err) {
+        console.error('Errore richiesta permesso push:', err);
+    }
+}
 
-        // Controlla se esiste già una subscription attiva per questo dispositivo
+async function avviaSottoscrizionePush(supabaseClient, profileId, registration) {
+    try {
         let subscription = await registration.pushManager.getSubscription();
 
         if (!subscription) {
@@ -52,8 +86,11 @@ async function inizializzaPushNotifiche(supabaseClient, profileId) {
 
         await salvaSubscriptionSuSupabase(supabaseClient, profileId, subscription);
 
+        const btn = document.getElementById('btnAttivaNotifiche');
+        if (btn) btn.style.display = 'none';
+
     } catch (err) {
-        console.error('Errore inizializzazione push:', err);
+        console.error('Errore sottoscrizione push:', err);
     }
 }
 
