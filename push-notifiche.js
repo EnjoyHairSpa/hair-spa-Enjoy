@@ -98,16 +98,14 @@ async function avviaSottoscrizionePush(supabaseClient, profileId, registration) 
 async function salvaSubscriptionSuSupabase(supabaseClient, profileId, subscription) {
     const subJson = subscription.toJSON();
 
-    const { error } = await supabaseClient
-        .from('push_subscriptions')
-        .upsert({
-            profile_id: profileId,
-            endpoint: subJson.endpoint,
-            p256dh: subJson.keys.p256dh,
-            auth: subJson.keys.auth,
-            user_agent: navigator.userAgent,
-            attivo: true
-        }, { onConflict: 'endpoint' });
+    // UTILIZZA LA RPC: bissa i problemi di RLS ed esegue il salvataggio in sicurezza
+    const { error } = await supabaseClient.rpc('salva_push_subscription', {
+        p_profile_id: profileId,
+        p_endpoint: subJson.endpoint,
+        p_p256dh: subJson.keys.p256dh,
+        p_auth: subJson.keys.auth,
+        p_user_agent: navigator.userAgent
+    });
 
     if (error) {
         console.error('Errore salvataggio subscription:', error);
