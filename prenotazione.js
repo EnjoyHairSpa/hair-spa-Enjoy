@@ -87,32 +87,50 @@ document.addEventListener('DOMContentLoaded', async () => {
         container.innerHTML = "";
         const categorie = [...new Set(servizi.map(s => s.categoria))];
         
-        categorie.forEach(cat => {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'accordion-item';
-            wrapper.innerHTML = `
-                <div class="cat-title">
-                    <span>${cat}</span> <span class="arrow">▼</span>
-                </div>
-                <div class="cat-content" style="display:none; padding:15px;"></div>
-            `;
-            const content = wrapper.querySelector('.cat-content');
-servizi.filter(s => s.categoria === cat).forEach(s => {
-    content.innerHTML += `
-        <label class="radio-item">
-            <span>${s.nome_servizio}</span>
-            <input type="radio" name="${cat}" value="${s.nome_servizio}" 
-                   data-id="${s.id}" 
-                   data-guid="${s.guid_locale || ''}"> 
-        </label>`;            });
-            wrapper.querySelector('.cat-title').onclick = () => {
-                const isHidden = content.style.display === "none";
-                content.style.display = isHidden ? "block" : "none";
-                wrapper.querySelector('.arrow').style.transform = isHidden ? "rotate(180deg)" : "rotate(0deg)";
-            };
-            container.appendChild(wrapper);
+categorie.forEach(cat => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'accordion-item';
+    wrapper.innerHTML = `
+        <div class="cat-title">
+            <span>${cat}</span> <span class="arrow">▼</span>
+        </div>
+        <div class="cat-content" style="display:none; padding:15px;"></div>
+    `;
+    const content = wrapper.querySelector('.cat-content');
+
+    servizi.filter(s => s.categoria === cat).forEach(s => {
+        content.innerHTML += `
+            <label class="radio-item">
+                <span>${s.nome_servizio}</span>
+                <input type="radio" name="${cat}" value="${s.nome_servizio}" 
+                       data-id="${s.id}" 
+                       data-guid="${s.guid_locale || ''}"> 
+            </label>`;
+    });
+
+    wrapper.querySelector('.cat-title').onclick = () => {
+        const isHidden = content.style.display === "none";
+        content.style.display = isHidden ? "block" : "none";
+        wrapper.querySelector('.arrow').style.transform = isHidden ? "rotate(180deg)" : "rotate(0deg)";
+    };
+
+    // Permette di deselezionare un radio ricliccandoci sopra
+    content.querySelectorAll('input[type="radio"]').forEach(radio => {
+        radio.addEventListener('click', function() {
+            if (this._eraSelezionato) {
+                this.checked = false;
+            }
         });
-    }
+        radio.addEventListener('change', function() {
+            content.querySelectorAll(`input[name="${this.name}"]`).forEach(r => {
+                r._eraSelezionato = false;
+            });
+            this._eraSelezionato = this.checked;
+        });
+    });
+
+    container.appendChild(wrapper);
+});    }
 
     // --- GESTIONE INVIO FORM ---
     const form = document.getElementById('prenotazioneForm');
