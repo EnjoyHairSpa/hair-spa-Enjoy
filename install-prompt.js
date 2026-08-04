@@ -12,6 +12,14 @@
         return;
     }
 
+    // Il service worker deve essere registrato per far comparire il prompt di installazione,
+    // anche prima del login (qui lo registriamo, ma le notifiche restano gestite altrove)
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').catch((err) => {
+            console.error('Errore registrazione service worker:', err);
+        });
+    }
+
     const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
 
     // Se il banner era stato chiuso in questa sessione del browser, non lo rimostriamo
