@@ -13,8 +13,13 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(self.clients.claim());
 });
 
-// Gestione fetch minimale (requisito tecnico di installabilità, nessuna cache aggressiva)
+// Gestione fetch: intercettiamo SOLO le richieste di lettura (GET).
+// Le richieste che salvano dati (POST/PUT/DELETE, come le prenotazioni) passano dritte
+// al browser senza passare da qui, per evitare che vengano eseguite due volte.
 self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') {
+    return;
+  }
   event.respondWith(fetch(event.request));
 });
 
