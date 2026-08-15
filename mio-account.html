@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Il Mio Account - Enjoy Bio Hair Spa</title>
+    <link rel="stylesheet" href="dark-luxury.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="dark-page">
+
+<div class="form-container">
+    <p class="section-label" style="text-align:center; margin-top: 30px;">Il Mio Account</p>
+
+    <div style="text-align:center; margin-bottom: 15px;">
+        <button id="btnModifica" style="padding: 8px 20px; background: transparent; border: 1px solid #c5a059; color: #c5a059; border-radius: 20px; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer;">Modifica</button>
+        <button id="btnSalva" style="display:none; padding: 8px 20px; background: #c5a059; border: 1px solid #c5a059; color: #000; border-radius: 20px; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer;">Salva Modifiche</button>
+    </div>
+
+    <div class="booking-card" id="account-data">
+        <p class="booking-notes" style="text-align:center;">Caricamento dati...</p>
+    </div>
+
+    <p id="account-msg" style="text-align:center; font-size:0.75rem; margin-top:10px;"></p>
+</div>
+
+<script src="config.js"></script>
+<script src="mio-account.js"></script>
+<script src="bottom-nav.js"></script>    
+</body>
+</html>
