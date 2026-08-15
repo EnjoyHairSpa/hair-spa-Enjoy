@@ -86,9 +86,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- CARICAMENTO SERVIZI ---
     const { data: servizi } = await _supabase.from('services').select('*').order('categoria');
     
-    if (servizi && extraContainer) {
+if (servizi && extraContainer) {
         extraContainer.innerHTML = "";
-        const categorie = [...new Set(servizi.map(s => s.categoria))];
+        const categorie = [...new Set(servizi.map(s => s.categoria))]
+            .filter(cat => cat !== 'Detersione'); // Lo Shampoo si aggancia da solo alle Pieghe, non va scelto a mano
 
         categorie.forEach(cat => {
             const catWrapper = document.createElement('div');
@@ -157,7 +158,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         btnRichiedi.disabled = true;
         btnRichiedi.innerText = "REGISTRAZIONE...";
 
-        const selezioni = [];
+const selezioni = [];
         document.querySelectorAll('input[name="servizio-qty"]').forEach(input => {
             if (parseInt(input.value) > 0) {
                 selezioni.push({ servizio: input.dataset.nome, qty: input.value });
@@ -168,6 +169,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             selezioni.unshift({ servizio: "Consulenza Sensoriale", qty: 1 });
         }
 
+        // Lo Shampoo è sempre incluso, agganciato automaticamente al numero di Pieghe
+        let totalePieghe = 0;
+        document.querySelectorAll('.qty-piega').forEach(input => totalePieghe += parseInt(input.value) || 0);
+        if (totalePieghe > 0) {
+            selezioni.push({ servizio: "Shampoo", qty: totalePieghe });
+        }
         const dataVal = document.getElementById('data').value;
         const oraVal = document.getElementById('orario').value;
         const noteVal = document.getElementById('note').value;
