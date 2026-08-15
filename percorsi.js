@@ -104,7 +104,7 @@ if (servizi && extraContainer) {
             content.style.display = "none";
             content.style.padding = "0 15px 15px 15px";
 
-            servizi.filter(s => s.categoria === cat).forEach(s => {
+servizi.filter(s => s.categoria === cat).forEach(s => {
                 const item = document.createElement('div');
                 item.style = "display:flex; justify-content:space-between; align-items:center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);";
                 const isPiega = s.categoria.toLowerCase().includes('piega');
@@ -113,12 +113,11 @@ if (servizi && extraContainer) {
                     <span style="color:#eee; font-size:0.95rem;">${s.nome_servizio}</span>
                     <input type="number" name="servizio-qty" 
                            class="${isPiega ? 'qty-input qty-piega' : 'qty-input'}"
-                           data-nome="${s.nome_servizio}" value="0" min="0" 
+                           data-nome="${s.nome_servizio}" data-id="${s.id}" value="0" min="0" 
                            style="width:55px; background:#000; border:1px solid #444; color:var(--gold); text-align:center; padding:5px;">
                 `;
                 content.appendChild(item);
             });
-
             title.onclick = () => {
                 const isHidden = content.style.display === "none";
                 content.style.display = isHidden ? "block" : "none";
@@ -161,20 +160,21 @@ if (servizi && extraContainer) {
 const selezioni = [];
         document.querySelectorAll('input[name="servizio-qty"]').forEach(input => {
             if (parseInt(input.value) > 0) {
-                selezioni.push({ servizio: input.dataset.nome, qty: input.value });
+                selezioni.push({ servizio: input.dataset.nome, servizio_id: input.dataset.id, qty: input.value });
             }
         });
 
         if (document.getElementById('consulenza').checked) {
-            selezioni.unshift({ servizio: "Consulenza Sensoriale", qty: 1 });
+            selezioni.unshift({ servizio: "Consulenza Sensoriale", servizio_id: null, qty: 1 });
         }
 
         // Lo Shampoo è sempre incluso, agganciato automaticamente al numero di Pieghe
         let totalePieghe = 0;
         document.querySelectorAll('.qty-piega').forEach(input => totalePieghe += parseInt(input.value) || 0);
         if (totalePieghe > 0) {
-            selezioni.push({ servizio: "Shampoo", qty: totalePieghe });
-        }
+            const shampooId = servizi.find(s => s.categoria === 'Detersione')?.id || null;
+            selezioni.push({ servizio: "Shampoo", servizio_id: shampooId, qty: totalePieghe });
+        }        
         const dataVal = document.getElementById('data').value;
         const oraVal = document.getElementById('orario').value;
         const noteVal = document.getElementById('note').value;

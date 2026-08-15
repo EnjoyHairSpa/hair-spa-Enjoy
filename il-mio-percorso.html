@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Il Mio Percorso - Hair Spa</title>
+    <link rel="stylesheet" href="dark-luxury.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body.dark-page {
+            background: url('lista.png') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            position: relative;
+        }
+        body.dark-page::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.82);
+            z-index: 0;
+        }
+        .form-container {
+            position: relative;
+            z-index: 1;
+            padding: 25px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .proposta-card {
+            background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+            border: 1px solid var(--gold);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .proposta-titolo {
+            color: var(--gold);
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 15px;
+        }
+        .proposta-prezzo {
+            font-size: 2rem;
+            color: #fff;
+            font-weight: 200;
+            margin-bottom: 15px;
+        }
+        .proposta-servizi {
+            list-style: none;
+            padding: 0;
+            margin: 15px 0;
+        }
+        .proposta-servizi li {
+            color: #ccc;
+            font-size: 0.85rem;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .proposta-azioni {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .btn-accetta, .btn-rifiuta {
+            flex: 1;
+            padding: 14px;
+            border-radius: 8px;
+            border: none;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+        .btn-accetta { background: var(--gold); color: #000; font-weight: bold; }
+        .btn-rifiuta { background: transparent; color: #888; border: 1px solid #444; }
+
+        .storico-card {
+            background: rgba(255,255,255,0.03);
+            border-left: 3px solid #555;
+            border-radius: 8px;
+            padding: 18px;
+            margin-bottom: 15px;
+        }
+        .storico-card.stato-in_attesa { border-left-color: #888; }
+        .storico-card.stato-proposta_inviata { border-left-color: var(--gold); }
+        .storico-card.stato-accettato { border-left-color: #4caf50; }
+        .storico-card.stato-rifiutato { border-left-color: #ff4444; opacity: 0.6; }
+        .storico-stato {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gold);
+        }
+        .storico-data {
+            font-size: 0.75rem;
+            color: #888;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body class="dark-page">
+    <div class="form-container">
+        <nav class="top-nav" style="position: relative; padding: 0; display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <a href="area-riservata.html" class="btn-back">Indietro</a>
+        </nav>
+
+        <h1 class="page-title" style="margin-bottom: 25px; font-weight: 200; letter-spacing: 6px; text-align:center;">IL MIO PERCORSO</h1>
+
+        <div id="proposta-container"></div>
+
+        <p class="section-label" style="font-size: 0.7rem; letter-spacing: 2px; margin-top: 30px;">STORICO RICHIESTE</p>
+        <div id="storico-container">
+            <div class="empty-state" style="text-align:center; opacity:0.5; font-style:italic; padding: 30px 0;">Caricamento...</div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="il-mio-percorso.js"></script>
+</body>
+</html>
