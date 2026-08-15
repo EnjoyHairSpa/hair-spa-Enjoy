@@ -29,7 +29,7 @@ const PercorsiHelper = {
                       `⏰ *Ora:* ${oraVal}\n\n` +
                       `💇‍♀️ *Servizi nel Percorso:*\n${listaServizi}\n\n` +
                       (note ? `📝 *Note:* _${note}_\n` : "") +
-                      `\n_Richiesta inviata con eleganza dall'App Luxury_`;
+                      `\n_Richiesta inviata dall'App Enjoy_`;
 
         return encodeURIComponent(testo);
     },

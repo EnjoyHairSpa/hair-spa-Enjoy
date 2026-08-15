@@ -29,7 +29,7 @@ window.BookingHelper = window.BookingHelper || {
                     `⏰ *Ora:* ${oraVal}\n\n` +
                     `💇‍♂️ *Servizi richiesti:*\n${listaServizi}\n\n` + 
                     (note ? `📝 *Note:* _${note}_\n` : "") +
-                    `\n_Inviato con eleganza dall'App Luxury_`;
+                    `\n_Inviato dall'App Enjoy_`;
 
         return encodeURIComponent(testo);
     },

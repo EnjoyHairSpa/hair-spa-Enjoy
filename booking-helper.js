@@ -15,7 +15,7 @@ export const BookingHelper = {
                       `⏰ *Ora:* ${oraVal}\n` +
                       `💇‍♂️ *Servizi:* ${servizi}\n` +
                       (note ? `📝 *Note:* _${note}_\n` : "") +
-                      `\n_Inviato con eleganza dall'App Luxury_`;
+                      `\n_Inviatodall'App Enjoy_`;
 
         // encodeURIComponent trasforma il testo in un link valido per il browser
         return encodeURIComponent(testo);
