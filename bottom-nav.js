@@ -4,7 +4,7 @@
 (function () {
 
   const NAV_ITEMS = [
-    { label: "Il Percorso", icon: "✨", href: "percorsi.html" },
+    { label: "Crea Percorso", icon: "✨", href: "percorsi.html" },
     { label: "Prenota",     icon: "➕", href: "prenotazione.html" },
     { label: "Home",        icon: "🏠", href: "area-riservata.html" }
   ];
