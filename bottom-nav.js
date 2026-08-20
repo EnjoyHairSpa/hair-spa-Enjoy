@@ -4,10 +4,9 @@
 (function () {
 
   const NAV_ITEMS = [
-    { label: "Appuntamenti", icon: "📅", href: "area-riservata.html" },
-    { label: "Percorso",     icon: "✨", href: "il-mio-percorso.html" },
-    { label: "Prenota",      icon: "➕", href: "prenotazione.html" },
-    { label: "Account",      icon: "👤", href: "mio-account.html" }
+    { label: "Il Percorso", icon: "✨", href: "il-mio-percorso.html" },
+    { label: "Prenota",     icon: "➕", href: "prenotazione.html" },
+    { label: "Home",        icon: "🏠", href: "area-riservata.html" }
   ];
 
   function currentPage() {

@@ -3,15 +3,14 @@
 let profiloCorrente = null;
 
 async function caricaDatiAccount() {
-  const container = document.getElementById('account-data');
-
   const { data: { user }, error: userError } = await _supabase.auth.getUser();
 
   if (userError || !user) {
-    container.innerHTML = '<p class="booking-notes">Sessione non valida.</p>';
+    window.location.href = "index.html";
     return;
   }
 
+  const container = document.getElementById('account-data');
   const { data: profilo, error: profiloError } = await _supabase
     .from('profiles')
     .select('nome, cognome, telefono, email, data_nascita')

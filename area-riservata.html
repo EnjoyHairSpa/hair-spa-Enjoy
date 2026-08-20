@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="manifest.json">
-   <meta name="apple-mobile-web-app-capable" content="yes">
-   <link rel="apple-touch-icon" href="icon-192.png">
-    <title>I Tuoi Rituali - Hair Spa</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Area Riservata - Hair Spa</title>
+    
     <link rel="stylesheet" href="dark-luxury.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* --- 1. SFONDO CON IMMAGINE "LISTA" --- */
         body.dark-page {
             background: url('lista.png') no-repeat center center fixed;
             background-size: cover;
@@ -19,143 +19,99 @@
             min-height: 100vh;
             position: relative;
         }
-
-        /* Overlay scuro per far risaltare il testo oro */
         body.dark-page::before {
             content: "";
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.82); /* Intensità del nero sullo sfondo */
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.82);
             z-index: 0;
         }
-
-        /* --- 2. CONTENITORE E LAYOUT --- */
         .form-container {
             position: relative;
             z-index: 1;
-            background: transparent !important;
-            box-shadow: none !important;
             padding: 25px;
             max-width: 500px;
             margin: 0 auto;
         }
-
-        /* --- 3. CARD APPUNTAMENTI (EFFETTO LUXURY GLASS) --- */
-        .booking-card {
-            background: rgba(255, 255, 255, 0.03); 
-            backdrop-filter: blur(12px); /* Effetto sfocato */
+        .hub-card {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(197, 160, 89, 0.15);
-            border-left: 4px solid var(--gold);
-            padding: 20px;
-            border-radius: 18px;
-            margin-bottom: 20px;
-            position: relative;
+            border-radius: 16px;
+            padding: 22px 25px;
+            margin-bottom: 18px;
+            text-decoration: none;
             transition: transform 0.3s ease, border-color 0.3s ease;
         }
-
-        .booking-card:hover {
+        .hub-card:hover {
             transform: translateY(-3px);
             border-color: var(--gold);
             background: rgba(255, 255, 255, 0.05);
         }
-
-        .status-badge {
-            position: absolute;
-            top: 18px;
-            right: 20px;
-            font-size: 0.6rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--gold);
-            font-weight: bold;
+        .hub-icon {
+            font-size: 1.6rem;
+            opacity: 0.85;
+            width: 34px;
+            text-align: center;
         }
-
-        .booking-date {
-            color: var(--gold);
-            font-size: 0.75rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 8px;
+        .hub-text {
+            display: flex;
+            flex-direction: column;
         }
-
-        .booking-service {
+        .hub-title {
+            color: #fff;
             font-size: 1rem;
             font-weight: 300;
-            letter-spacing: 1px;
-            color: #fff;
+            letter-spacing: 1.5px;
             text-transform: uppercase;
         }
-
-        .booking-notes {
-            color: #777;
+        .hub-subtitle {
+            color: #888;
             font-size: 0.75rem;
-            margin-top: 10px;
-            font-style: italic;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            padding-top: 8px;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: #555;
-            font-style: italic;
-            font-size: 0.9rem;
-            letter-spacing: 1px;
-        }
-
-        /* Forza la centratura dei titoli sezione */
-        .section-label {
-            color: var(--text-secondary);
-            font-size: 0.7rem;
-            letter-spacing: 3px;
-            margin-top: 30px;
-            margin-bottom: 20px;
-            text-transform: uppercase;
+            margin-top: 4px;
+            letter-spacing: 0.5px;
         }
     </style>
 </head>
 <body class="dark-page">
-    
+
     <div class="form-container">
-        <nav class="top-nav" style="position: relative; padding: 0; display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
-            <a href="index.html" class="btn-back">Indietro</a>
-            <a href="prenotazione.html" class="auth-trigger-btn" style="text-decoration: none;">Nuova Prenotazione</a>
-            <a href="il-mio-percorso.html" class="auth-trigger-btn" style="text-decoration: none;">Il Mio Percorso</a>
-        </nav>
-<button id="btnAttivaNotifiche" style="display:block; margin: 15px auto; padding: 10px 20px; background: transparent; border: 1px solid #c5a059; color: #c5a059; border-radius: 20px; font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer;">🔔 Attiva Notifiche</button><div style="margin: 25px 0; padding: 20px; border: 1px solid #c5a059; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 12px; text-align: center; position: relative; z-index: 10;">
-    <p style="font-size: 0.65rem; color: #c5a059; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; font-weight: bold;">
-        Info Prenotazioni
-    </p>
-    <p style="font-size: 0.8rem; color: #ffffff; line-height: 1.5; margin: 0; font-weight: 300; opacity: 0.9;">
-        Per modificare o annullare un rituale, ti chiediamo gentilmente di contattare il salone.
-    </p>
-    <a href="tel:+390952165888" style="display: inline-block; margin-top: 15px; color: #ffffff; text-decoration: none; font-size: 1rem; letter-spacing: 1px; border-bottom: 1px solid #c5a059; padding-bottom: 2px; font-weight: bold;">
-        <span style="margin-right: 5px;">📞</span> 095 21 65 888
-    </a>
-</div>
-        <div id="prossimi-appuntamenti">
-            <p class="section-label">Prossime Esperienze</p>
-            <div id="container-future">
-                <div class="empty-state">Ricerca appuntamenti...</div>
-            </div>
-        </div>
+        <h1 class="page-title" style="margin: 20px 0 35px; font-weight: 200; letter-spacing: 6px; text-align:center; color:#fff;">
+            AREA RISERVATA
+        </h1>
+<button id="btnAttivaNotifiche" style="display:block; margin: 15px auto; padding: 10px 20px; background: transparent; border: 1px solid #c5a059; color: #c5a059; border-radius: 20px; font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer;">🔔 Attiva Notifiche</button>
+        <a href="appuntamenti.html" class="hub-card">
+            <span class="hub-icon">📅</span>
+            <span class="hub-text">
+                <span class="hub-title">Appuntamenti</span>
+                <span class="hub-subtitle">I tuoi rituali prenotati</span>
+            </span>
+        </a>
 
-        <div id="storico-appuntamenti">
-            <p class="section-label">Ultime 3 Visite</p>
-            <div id="container-past">
-                </div>
-        </div>
+        <a href="il-mio-percorso.html" class="hub-card">
+            <span class="hub-icon">✨</span>
+            <span class="hub-text">
+                <span class="hub-title">Il Mio Percorso</span>
+                <span class="hub-subtitle">Percorsi e avanzamento</span>
+            </span>
+        </a>
 
+        <a href="mio-account.html" class="hub-card">
+            <span class="hub-icon">👤</span>
+            <span class="hub-text">
+                <span class="hub-title">Account</span>
+                <span class="hub-subtitle">I tuoi dati personali</span>
+            </span>
+        </a>
     </div>
+
     <script src="config.js"></script>
     <script src="push-notifiche.js"></script>
     <script src="area-riservata.js"></script>
     <script src="bottom-nav.js"></script>
-    
 </body>
 </html>
