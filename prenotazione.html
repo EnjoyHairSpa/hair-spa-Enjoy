@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prenotazione - Hair Spa</title>
     <link rel="stylesheet" href="dark-luxury.css">
+    <link rel="stylesheet" href="slot-popup.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* Accordion & Selection Style */
@@ -151,10 +152,34 @@
         </form>
     </div>
 
-    
-    
-    <script src="config.js"></script>          <!-- METTILO QUI -->
-    <script src="prenotazione.js"></script>
-    <script src="bottom-nav.js"></script>
-</body>
-</html>
+<!-- ===================== POPUP SLOT PREMI ===================== -->
+<div class="slot-overlay nascosto" id="slotOverlay">
+    <div class="slot-popup">
+        <p class="slot-titolo">Hai sbloccato un giro fortunato</p>
+        <p class="slot-sottotitolo">Gira e scopri il tuo premio esclusivo</p>
+
+        <div class="slot-rulli-container">
+            <div class="slot-rullo-finestra"><div id="rullo1"></div></div>
+            <div class="slot-rullo-finestra"><div id="rullo2"></div></div>
+            <div class="slot-rullo-finestra"><div id="rullo3"></div></div>
+        </div>
+
+        <p class="slot-risultato nascosto" id="slotRisultato"></p>
+
+        <div class="slot-pulsanti">
+            <button class="slot-btn slot-btn-principale" id="btnGira">GIRA</button>
+        </div>
+
+        <div class="slot-conferma-container nascosto" id="slotConferma"></div>
+    </div>
+</div>
+<!-- ================= FINE POPUP SLOT PREMI ================= -->
+
+<script src="config.js"></script>
+<script src="slot-icone.js"></script>
+<script src="slot-icone-ricco.js"></script>
+<script src="slot-motore.js"></script>
+<script src="slot-paniere.js"></script>
+<script src="slot-integrazione.js"></script>
+<script src="prenotazione.js"></script>
+<script src="bottom-nav.js"></script>

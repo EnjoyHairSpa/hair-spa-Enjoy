@@ -1,7 +1,3 @@
-
-
-
-
 // --- GENERATORE CODICE UNIVOCO ---
 function generaCodiceCloud() {
     const caratteri = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -9,14 +5,14 @@ function generaCodiceCloud() {
     for (let i = 0; i < 6; i++) {
         risultato += caratteri.charAt(Math.floor(Math.random() * caratteri.length));
     }
-    return `NS-${risultato}`; 
+    return `NS-${risultato}`;
 }
 
 // --- HELPER PER INVIO E WHATSAPP ---
 window.BookingHelper = window.BookingHelper || {
     formatWA(data) {
-        const { nome, cognome, email, telefono, servizi, dataVal, oraVal, note } = data;
-        
+        const { nome, cognome, email, telefono, servizi, dataVal, oraVal, note, premioVintoTesto } = data;
+
         const listaServizi = servizi.split(',')
             .map(s => `  • ${s.trim()}`)
             .join('\n');
@@ -27,31 +23,30 @@ window.BookingHelper = window.BookingHelper || {
                     `📧 *Email:* ${email}\n\n` +
                     `📅 *Data:* ${dataVal}\n` +
                     `⏰ *Ora:* ${oraVal}\n\n` +
-                    `💇‍♂️ *Servizi richiesti:*\n${listaServizi}\n\n` + 
+                    `💇‍♂️ *Servizi richiesti:*\n${listaServizi}\n\n` +
+                    (premioVintoTesto ? `🎁 *${premioVintoTesto}*\n\n` : "") +
                     (note ? `📝 *Note:* _${note}_\n` : "") +
                     `\n_Inviato dall'App Enjoy_`;
 
         return encodeURIComponent(testo);
     },
 
-    async invia(supabase, { session, profilo, righe, numeroWA, dataVal, oraVal, noteVal, nomiServizi }) {
-        // Salva su Supabase
+    async invia(supabase, { session, profilo, righe, numeroWA, dataVal, oraVal, noteVal, nomiServizi, premioVintoTesto }) {
         const { error } = await supabase.from('bookings').insert(righe);
         if (error) throw new Error("Errore database: " + error.message);
 
-        // Prepara messaggio WhatsApp
         const messaggio = this.formatWA({
             nome: profilo.nome || "Cliente",
             cognome: profilo.cognome || "",
             email: profilo.email || session.user.email,
-            telefono: profilo.telefono || "", // Recuperato dal profilo
+            telefono: profilo.telefono || "",
             servizi: nomiServizi,
             dataVal,
             oraVal,
-            note: noteVal
+            note: noteVal,
+            premioVintoTesto
         });
 
-        // Apri WhatsApp
         window.open(`https://wa.me/${numeroWA}?text=${messaggio}`, '_blank');
         return true;
     }
@@ -59,17 +54,15 @@ window.BookingHelper = window.BookingHelper || {
 
 window.BookingHelper = window.BookingHelper || BookingHelper;
 
-// 3. LOGICA DELLA PAGINA (PULITA E UNITA)
+// 3. LOGICA DELLA PAGINA
 document.addEventListener('DOMContentLoaded', async () => {
-    
-    // --- CONTROLLO LOGIN ---
+
     const { data: { session } } = await _supabase.auth.getSession();
     if (!session) {
         window.location.href = "index.html?auth=required";
-        return; 
+        return;
     }
 
-    // --- RECUPERO PROFILO UTENTE (Incluso Telefono) ---
     const { data: profilo } = await _supabase
         .from('profiles')
         .select('nome, cognome, email, telefono')
@@ -83,11 +76,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- CARICAMENTO SERVIZI DINAMICI ---
     const container = document.getElementById('servizi-dinamici');
     const { data: servizi } = await _supabase.from('services').select('*').order('categoria');
-    
+
+    // Mappa id -> nome_servizio, usata dalla slot per riconoscere l'icona e mostrare il nome vinto
+    const mappaServizi = {};
+    (servizi || []).forEach(s => { mappaServizi[s.id] = s.nome_servizio; });
+
     if (servizi && container) {
         container.innerHTML = "";
         const categorie = [...new Set(servizi.map(s => s.categoria))];
-        
+
         categorie.forEach(cat => {
             const wrapper = document.createElement('div');
             wrapper.className = 'accordion-item';
@@ -103,9 +100,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 content.innerHTML += `
                     <label class="radio-item">
                         <span>${s.nome_servizio}</span>
-                        <input type="radio" name="${cat}" value="${s.nome_servizio}" 
-                               data-id="${s.id}" 
-                               data-guid="${s.guid_locale || ''}"> 
+                        <input type="radio" name="${cat}" value="${s.nome_servizio}"
+                               data-id="${s.id}"
+                               data-guid="${s.guid_locale || ''}">
                     </label>`;
             });
 
@@ -115,7 +112,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 wrapper.querySelector('.arrow').style.transform = isHidden ? "rotate(180deg)" : "rotate(0deg)";
             };
 
-            // Permette di deselezionare un radio ricliccandoci sopra
             content.querySelectorAll('input[type="radio"]').forEach(radio => {
                 radio.addEventListener('click', function() {
                     if (this._eraSelezionato) {
@@ -131,7 +127,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
 
             container.appendChild(wrapper);
-        }); 
+        });
     }
 
     // --- GESTIONE INVIO FORM ---
@@ -164,23 +160,59 @@ document.addEventListener('DOMContentLoaded', async () => {
                     guid_locale: radio.dataset.guid,
                     data_ora: dataOraISO,
                     note: noteVal,
-                    cloud_request_id: codiceUnivoco 
+                    cloud_request_id: codiceUnivoco
                 }));
 
-                const bookingData = {
+                const idsSelezionati = Array.from(selectedRadios).map(r => parseInt(r.dataset.id));
+
+                const bookingDataBase = {
                     session,
                     profilo: profilo || { nome: "Cliente", email: session.user.email, telefono: "" },
-                    righe,
                     numeroWA: "390952165888",
                     dataVal,
                     oraVal,
-                    noteVal,
+                    noteVal
+                };
+
+                // --- CONTROLLO PANIERE SLOT ---
+                const risultatoPaniere = await trovaPaniereCandidato(_supabase, idsSelezionati);
+
+                if (risultatoPaniere) {
+                    // C'è un paniere candidato: apriamo il popup slot e sospendiamo l'invio
+                    // fino a quando la cliente non decide (SI / NO / nessuna vincita).
+                    apriPopupSlot({
+                        risultatoPaniere,
+                        mappaServizi,
+                        session,
+                        profilo,
+                        righe,
+                        codiceUnivoco,
+                        dataOraISO,
+                        bookingDataBase,
+                        nomiServiziBase: Array.from(selectedRadios).map(r => r.value).join(", "),
+                        onCompletato: () => {
+                            btn.innerText = "INVIATO!";
+                            setTimeout(() => { window.location.href = "index.html"; }, 2000);
+                        },
+                        onErrore: (error) => {
+                            console.error(error);
+                            alert("Errore durante la prenotazione: " + error.message);
+                            btn.disabled = false;
+                            btn.innerText = "CONFERMA PRENOTAZIONE";
+                        }
+                    });
+                    return;
+                }
+
+                // --- NESSUN PANIERE: INVIO NORMALE (comportamento invariato) ---
+                const bookingData = {
+                    ...bookingDataBase,
+                    righe,
                     nomiServizi: Array.from(selectedRadios).map(r => r.value).join(", ")
                 };
 
                 await window.BookingHelper.invia(_supabase, bookingData);
-                
-                // Feedback successo
+
                 btn.innerText = "INVIATO!";
                 setTimeout(() => { window.location.href = "index.html"; }, 2000);
 

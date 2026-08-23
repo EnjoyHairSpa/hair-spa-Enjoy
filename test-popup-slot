@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Test Popup Slot</title>
+<style>
+    :root { --gold: #d4af37; }
+    body {
+        background: #050505;
+        font-family: sans-serif;
+        min-height: 100vh;
+        margin: 0;
+    }
+    .pulsante-apri-test {
+        margin: 40px auto; display: block;
+        padding: 15px 30px; background: var(--gold); color: #000;
+        border: none; border-radius: 10px; cursor: pointer;
+        font-size: 1rem; letter-spacing: 2px;
+    }
+</style>
+<link rel="stylesheet" href="slot-popup.css">
+</head>
+<body>
+
+    <button class="pulsante-apri-test" onclick="document.getElementById('slotOverlay').classList.remove('nascosto')">
+        APRI POPUP SLOT (SOLO TEST)
+    </button>
+
+    <!-- ===================== POPUP SLOT ===================== -->
+    <div class="slot-overlay nascosto" id="slotOverlay">
+        <div class="slot-popup">
+            <p class="slot-titolo">Hai sbloccato un giro fortunato</p>
+            <p class="slot-sottotitolo">Gira e scopri il tuo premio esclusivo</p>
+
+            <div class="slot-rulli-container">
+                <div class="slot-rullo-finestra"><div id="rullo1"></div></div>
+                <div class="slot-rullo-finestra"><div id="rullo2"></div></div>
+                <div class="slot-rullo-finestra"><div id="rullo3"></div></div>
+            </div>
+
+            <!-- Testo risultato, per ora nascosto -->
+            <p class="slot-risultato nascosto" id="slotRisultato"></p>
+
+            <div class="slot-pulsanti">
+                <button class="slot-btn slot-btn-principale" id="btnGira">GIRA</button>
+            </div>
+
+            <!-- Popolato dinamicamente dopo lo spin: doppia conferma (se vinto) o pulsante chiudi (se niente) -->
+            <div class="slot-conferma-container nascosto" id="slotConferma"></div>
+        </div>
+    </div>
+    <!-- ================= FINE POPUP SLOT ================= -->
+
+    <script src="slot-icone.js"></script>
+    <script src="slot-icone-ricco.js"></script>
+    <script src="slot-motore.js"></script>
+    <script>
+        // Icone ferme iniziali, solo estetica prima di girare
+        document.getElementById('rullo1').innerHTML = creaBadgeSlot(SLOT_ICONE_RICCO.taglio, 100);
+        document.getElementById('rullo2').innerHTML = creaBadgeSlot(SLOT_ICONE_RICCO.colore, 100);
+        document.getElementById('rullo3').innerHTML = creaBadgeSlot(SLOT_ICONE_RICCO.ricostruzione, 100);
+
+        // --- DATI FINTI DI PROVA (poi sostituiti dai dati reali da Supabase) ---
+        const premiFinti = [
+            { servizio_id: 1, valore_buono: 5, peso: 100 },   // Trattamento
+            { servizio_id: 2, valore_buono: 15, peso: 200 },  // Ricostruzione
+            { servizio_id: 3, valore_buono: 10, peso: 100 }   // Laminazione
+        ]; // somma pesi = 400 su 1000 -> 40% di vincere qualcosa, 60% niente
+
+        const mappaServiziFinta = {
+            1: "Trattamento Post Colore",
+            2: "Ricostruzione Molecolare",
+            3: "Laminazione Brasiliana"
+        };
+
+        // --- AUDIO ---
+        const audioGiro = new Audio('slot.mp3');
+        audioGiro.loop = true;
+        const audioVincita = new Audio('win.mp3');
+
+        document.getElementById('btnGira').addEventListener('click', () => {
+            const btn = document.getElementById('btnGira');
+            btn.disabled = true;
+            btn.innerText = "STA GIRANDO...";
+
+            const rulli = [
+                document.getElementById('rullo1'),
+                document.getElementById('rullo2'),
+                document.getElementById('rullo3')
+            ];
+
+            audioGiro.currentTime = 0;
+            audioGiro.play();
+
+            eseguiSlot(premiFinti, rulli, mappaServiziFinta, (esito) => {
+                audioGiro.pause();
+                audioGiro.currentTime = 0;
+
+                if (esito.vinto) {
+                    audioVincita.currentTime = 0;
+                    audioVincita.play();
+                }
+
+                console.log("ESITO SLOT:", esito);
+                mostraRisultato(esito);
+            });
+        });
+
+        // --- MOSTRA IL RISULTATO E I PULSANTI GIUSTI IN BASE ALL'ESITO ---
+        function mostraRisultato(esito) {
+            const risultatoEl = document.getElementById('slotRisultato');
+            const confermaEl = document.getElementById('slotConferma');
+            const pulsantiIniziali = document.querySelector('.slot-pulsanti');
+
+            // Nasconde il pulsante GIRA, non serve più in questo popup
+            pulsantiIniziali.classList.add('nascosto');
+
+            if (esito.vinto) {
+                risultatoEl.innerHTML =
+                    `🎁 <strong>Hai vinto: ${esito.nome_servizio}</strong><br>` +
+                    `Buono € ${esito.valore_buono.toFixed(2)}<br>` +
+                    `<span style="font-size:0.75rem; color:#999;">Valido solo per questo appuntamento</span>`;
+
+                confermaEl.innerHTML = `
+                    <p class="slot-risultato">Sei sicura di voler aggiungere questo premio alla prenotazione?</p>
+                    <div class="slot-pulsanti">
+                        <button class="slot-btn slot-btn-principale" id="btnConfermaSi">SÌ, AGGIUNGI</button>
+                        <button class="slot-btn" id="btnConfermaNo">NO, GRAZIE</button>
+                    </div>
+                `;
+
+                document.getElementById('btnConfermaSi').addEventListener('click', () => {
+                    console.log("Cliente ha ACCETTATO il premio.");
+                    // (Passo successivo: qui aggiungeremo il servizio alla prenotazione + salvataggio vincita)
+                });
+
+                document.getElementById('btnConfermaNo').addEventListener('click', () => {
+                    console.log("Cliente ha RIFIUTATO il premio.");
+                    // (Passo successivo: qui salveremo la vincita con stato 'rifiutato')
+                });
+
+            } else {
+                risultatoEl.innerHTML =
+                    `Ci sei andata vicino!<br>Al prossimo appuntamento sarai più fortunata.`;
+
+                confermaEl.innerHTML = `
+                    <div class="slot-pulsanti">
+                        <button class="slot-btn slot-btn-principale" id="btnChiudi">CHIUDI</button>
+                    </div>
+                `;
+
+                document.getElementById('btnChiudi').addEventListener('click', () => {
+                    console.log("Popup chiuso, nessun premio vinto.");
+                    // (Passo successivo: qui chiuderemo davvero il popup e invieremo la prenotazione)
+                });
+            }
+
+            risultatoEl.classList.remove('nascosto');
+            confermaEl.classList.remove('nascosto');
+        }
+    </script>
+</body>
+</html>
