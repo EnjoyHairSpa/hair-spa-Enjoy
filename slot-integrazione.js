@@ -1,15 +1,16 @@
 // =========================================================
 // SLOT MACHINE PREMI - Integrazione con il flusso reale di prenotazione
 // =========================================================
-// Presuppone che nel DOM esista già il markup del popup slot
-// (vedi frammento slot-popup-markup.html) con gli id:
-// slotOverlay, rullo1, rullo2, rullo3, slotRisultato, slotConferma
+// IMPORTANTE: in questa versione la prenotazione BASE viene già inviata
+// (bookings + WhatsApp) PRIMA di chiamare questa funzione, in prenotazione.js.
+// Questo popup gestisce SOLO l'eventuale aggiunta del premio vinto come
+// riga extra, così la prenotazione è sempre al sicuro qualsiasi cosa
+// faccia la cliente durante lo spin (chiusura pagina compresa).
 
 async function apriPopupSlot(ctx) {
     const {
-        risultatoPaniere, mappaServizi, session, profilo,
-        righe, codiceUnivoco, dataOraISO, bookingDataBase,
-        nomiServiziBase, onCompletato, onErrore
+        risultatoPaniere, mappaServizi, session,
+        codiceUnivoco, dataOraISO, datiPerWhatsApp, onCompletato, onErrore
     } = ctx;
 
     const overlay = document.getElementById('slotOverlay');
@@ -86,66 +87,58 @@ async function apriPopupSlot(ctx) {
             document.getElementById('btnConfermaNo').addEventListener('click', () =>
                 completaConEsito(esito, false));
 
+            risultatoEl.classList.remove('nascosto');
+            confermaEl.classList.remove('nascosto');
+
         } else {
+            // La prenotazione è già stata inviata prima dello spin: qui non c'è
+            // più nulla di cui preoccuparsi, apriamo WhatsApp (senza premio) e chiudiamo.
             risultatoEl.innerHTML =
                 `Ci sei andata vicino!<br>Al prossimo appuntamento sarai più fortunata.`;
+            risultatoEl.classList.remove('nascosto');
 
-            confermaEl.innerHTML = `
-                <div class="slot-pulsanti">
-                    <button class="slot-btn slot-btn-principale" id="btnConfermaPrenotazione">CONFERMA PRENOTAZIONE</button>
-                </div>
-            `;
-
-            document.getElementById('btnConfermaPrenotazione').addEventListener('click', () =>
-                completaConEsito(esito, false));
+            setTimeout(() => {
+                window.BookingHelper.apriWhatsApp(datiPerWhatsApp);
+                overlay.classList.add('nascosto');
+                onCompletato();
+            }, 2500);
         }
-
-        risultatoEl.classList.remove('nascosto');
-        confermaEl.classList.remove('nascosto');
     }
 
-    // --- COMPLETAMENTO: salva vincita (se serve) + invia prenotazione ---
+    // --- COMPLETAMENTO: salva vincita + eventuale riga extra (prenotazione base già inviata) ---
     async function completaConEsito(esito, accettato) {
         try {
-            let righeFinali = righe;
-            let premioVintoTesto = null;
-            let nomiServiziFinali = nomiServiziBase;
+            // Salva sempre la vincita, accettata o rifiutata (rete di sicurezza)
+            const { error: errorVincita } = await _supabase.from('vincite_clienti').insert({
+                cliente_id: session.user.id,
+                cloud_request_id: codiceUnivoco,
+                paniere_id: risultatoPaniere.paniere.id,
+                servizio_id: esito.servizio_id,
+                valore_buono: esito.valore_buono,
+                stato: accettato ? 'vinto' : 'rifiutato'
+            });
 
-            if (esito.vinto) {
-                // Salva sempre la vincita, accettata o rifiutata (rete di sicurezza)
-                const { error: errorVincita } = await _supabase.from('vincite_clienti').insert({
+            if (errorVincita) throw new Error("Errore salvataggio vincita: " + errorVincita.message);
+
+            if (accettato) {
+                // Aggiunge il servizio vinto come riga extra alla prenotazione già esistente
+                const { error: errorRiga } = await _supabase.from('bookings').insert({
                     cliente_id: session.user.id,
-                    cloud_request_id: codiceUnivoco,
-                    paniere_id: risultatoPaniere.paniere.id,
                     servizio_id: esito.servizio_id,
-                    valore_buono: esito.valore_buono,
-                    stato: accettato ? 'vinto' : 'rifiutato'
+                    guid_locale: '',
+                    data_ora: dataOraISO,
+                    note: `PREMIO SLOT - Buono € ${esito.valore_buono.toFixed(2)}`,
+                    cloud_request_id: codiceUnivoco
                 });
 
-                if (errorVincita) throw new Error("Errore salvataggio vincita: " + errorVincita.message);
-
-                if (accettato) {
-                    // Aggiunge il servizio vinto come riga extra della prenotazione
-                    righeFinali = [...righe, {
-                        cliente_id: session.user.id,
-                        servizio_id: esito.servizio_id,
-                        guid_locale: '',
-                        data_ora: dataOraISO,
-                        note: `PREMIO SLOT - Buono € ${esito.valore_buono.toFixed(2)}`,
-                        cloud_request_id: codiceUnivoco
-                    }];
-
-                    premioVintoTesto = `HA VINTO: ${esito.nome_servizio} — Buono € ${esito.valore_buono.toFixed(2)}`;
-                    nomiServiziFinali = `${nomiServiziBase}, ${esito.nome_servizio} (premio)`;
-                }
+                if (errorRiga) throw new Error("Errore aggiunta servizio vinto: " + errorRiga.message);
             }
 
-            await window.BookingHelper.invia(_supabase, {
-                ...bookingDataBase,
-                righe: righeFinali,
-                nomiServizi: nomiServiziFinali,
-                premioVintoTesto
-            });
+            const premioVintoTesto = accettato
+                ? `HA VINTO: ${esito.nome_servizio} — Buono € ${esito.valore_buono.toFixed(2)}`
+                : null;
+
+            window.BookingHelper.apriWhatsApp({ ...datiPerWhatsApp, premioVintoTesto });
 
             overlay.classList.add('nascosto');
             onCompletato();

@@ -31,10 +31,18 @@ window.BookingHelper = window.BookingHelper || {
         return encodeURIComponent(testo);
     },
 
-    async invia(supabase, { session, profilo, righe, numeroWA, dataVal, oraVal, noteVal, nomiServizi, premioVintoTesto }) {
+    // Salva SOLO nel database (nessuna apertura WhatsApp). Usata quando serve
+    // garantire il salvataggio immediato prima di far girare la slot.
+    async inserisciPrenotazione(supabase, righe) {
         const { error } = await supabase.from('bookings').insert(righe);
         if (error) throw new Error("Errore database: " + error.message);
+        return true;
+    },
 
+    // Apre SOLO WhatsApp (nessun salvataggio). Usata quando il salvataggio
+    // è già avvenuto prima e vogliamo solo notificare il salone, eventualmente
+    // dopo aver saputo l'esito della slot.
+    apriWhatsApp({ session, profilo, numeroWA, dataVal, oraVal, noteVal, nomiServizi, premioVintoTesto }) {
         const messaggio = this.formatWA({
             nome: profilo.nome || "Cliente",
             cognome: profilo.cognome || "",
@@ -48,6 +56,13 @@ window.BookingHelper = window.BookingHelper || {
         });
 
         window.open(`https://wa.me/${numeroWA}?text=${messaggio}`, '_blank');
+    },
+
+    // Comodo wrapper per il caso SENZA slot: salva e apre WhatsApp insieme,
+    // come si faceva prima dell'introduzione della slot machine.
+    async invia(supabase, ctx) {
+        await this.inserisciPrenotazione(supabase, ctx.righe);
+        this.apriWhatsApp(ctx);
         return true;
     }
 };
@@ -178,27 +193,38 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const risultatoPaniere = await trovaPaniereCandidato(_supabase, idsSelezionati);
 
                 if (risultatoPaniere) {
-                    // C'è un paniere candidato: apriamo il popup slot e sospendiamo l'invio
-                    // fino a quando la cliente non decide (SI / NO / nessuna vincita).
+                    // IMPORTANTE: salviamo SUBITO la prenotazione nel database (senza
+                    // aprire WhatsApp) PRIMA di far girare la slot. Così la prenotazione
+                    // è già al sicuro qualsiasi cosa faccia la cliente durante lo spin.
+                    // WhatsApp si apre solo alla fine, DOPO l'esito della slot, per non
+                    // rubare l'attenzione dalla pagina prima che la cliente veda il popup
+                    // — e così il messaggio può includere anche l'eventuale premio vinto.
+                    await window.BookingHelper.inserisciPrenotazione(_supabase, righe);
+
+                    const datiPerWhatsApp = {
+                        ...bookingDataBase,
+                        nomiServizi: Array.from(selectedRadios).map(r => r.value).join(", ")
+                    };
+
                     apriPopupSlot({
                         risultatoPaniere,
                         mappaServizi,
                         session,
-                        profilo,
-                        righe,
                         codiceUnivoco,
                         dataOraISO,
-                        bookingDataBase,
-                        nomiServiziBase: Array.from(selectedRadios).map(r => r.value).join(", "),
+                        datiPerWhatsApp,
                         onCompletato: () => {
                             btn.innerText = "INVIATO!";
-                            setTimeout(() => { window.location.href = "index.html"; }, 2000);
+                            setTimeout(() => { window.location.href = "index.html"; }, 1500);
                         },
                         onErrore: (error) => {
+                            // La prenotazione base è comunque già andata a buon fine:
+                            // qui segnaliamo solo che il bonus slot non si è salvato bene.
                             console.error(error);
-                            alert("Errore durante la prenotazione: " + error.message);
-                            btn.disabled = false;
-                            btn.innerText = "CONFERMA PRENOTAZIONE";
+                            alert("La prenotazione è stata inviata correttamente. " +
+                                  "C'è stato un problema nel salvare il premio della slot: " + error.message);
+                            btn.innerText = "INVIATO!";
+                            setTimeout(() => { window.location.href = "index.html"; }, 1500);
                         }
                     });
                     return;
