@@ -97,7 +97,10 @@ async function apriPopupSlot(ctx) {
                 `Ci sei andata vicino!<br>Al prossimo appuntamento sarai più fortunata.`;
             risultatoEl.classList.remove('nascosto');
 
-            setTimeout(() => {
+            setTimeout(async () => {
+                if (risultatoPaniere.invitoId) {
+                    await _supabase.rpc('consuma_invito_slot', { invito_id: risultatoPaniere.invitoId });
+                }
                 window.BookingHelper.apriWhatsApp(datiPerWhatsApp);
                 overlay.classList.add('nascosto');
                 onCompletato();
@@ -137,6 +140,10 @@ async function apriPopupSlot(ctx) {
             const premioVintoTesto = accettato
                 ? `HA VINTO: ${esito.nome_servizio} — Buono € ${esito.valore_buono.toFixed(2)}`
                 : null;
+
+            if (risultatoPaniere.invitoId) {
+                await _supabase.rpc('consuma_invito_slot', { invito_id: risultatoPaniere.invitoId });
+            }
 
             window.BookingHelper.apriWhatsApp({ ...datiPerWhatsApp, premioVintoTesto });
 

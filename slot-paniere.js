@@ -74,3 +74,63 @@ async function trovaPaniereCandidato(supabase, idsServiziSelezionati) {
         premi: premi || []
     };
 }
+
+// =========================================================
+// SBLOCCO GIRI MANUALE - Inviti mirati per cliente specifica
+// =========================================================
+// Cerca se la cliente ha un invito attivo (non usato, non scaduto).
+// Ritorna il record dell'invito più vicino alla scadenza, o null.
+async function trovaInvitoAttivo(supabase, clienteId) {
+    const { data, error } = await supabase
+        .from('inviti_slot')
+        .select('id, paniere_id, data_scadenza')
+        .eq('cliente_id', clienteId)
+        .eq('usato', false)
+        .gte('data_scadenza', new Date().toISOString())
+        .order('data_scadenza', { ascending: true })
+        .limit(1);
+
+    if (error) {
+        console.error("Errore controllo invito slot:", error.message);
+        return null;
+    }
+
+    return (data && data.length > 0) ? data[0] : null;
+}
+
+// --- FUNZIONE PRINCIPALE DA CHIAMARE DAL FLUSSO DI PRENOTAZIONE ---
+// Controlla PRIMA se c'è un invito attivo (ha sempre la precedenza,
+// a prescindere dai servizi scelti); SOLO se non c'è, ricade sul
+// controllo normale dei trigger (trovaPaniereCandidato).
+// Ritorna lo stesso oggetto { paniere, premi }, con in più invitoId
+// se il paniere proviene da un invito (serve per marcarlo come "usato").
+async function trovaPaniereOInvito(supabase, clienteId, idsServiziSelezionati) {
+    const invito = await trovaInvitoAttivo(supabase, clienteId);
+
+    if (invito) {
+        const { data: paniereData, error: errorPaniere } = await supabase
+            .from('panieri')
+            .select('id, nome, numero_giri, soglia_max_peso')
+            .eq('id', invito.paniere_id)
+            .single();
+
+        if (!errorPaniere && paniereData) {
+            const { data: premi, error: errorPremi } = await supabase
+                .from('panieri_servizi_vincibili')
+                .select('servizio_id, valore_buono, peso')
+                .eq('paniere_id', invito.paniere_id);
+
+            if (!errorPremi) {
+                return {
+                    paniere: paniereData,
+                    premi: premi || [],
+                    invitoId: invito.id
+                };
+            }
+        }
+        // Se qualcosa non va nel recupero dati dell'invito, ricadiamo
+        // sul controllo normale piuttosto che bloccare la prenotazione.
+    }
+
+    return await trovaPaniereCandidato(supabase, idsServiziSelezionati);
+}

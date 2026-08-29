@@ -189,8 +189,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     noteVal
                 };
 
-                // --- CONTROLLO PANIERE SLOT ---
-                const risultatoPaniere = await trovaPaniereCandidato(_supabase, idsSelezionati);
+                // --- CONTROLLO PANIERE SLOT (invito manuale ha precedenza, poi trigger normali) ---
+                const risultatoPaniere = await trovaPaniereOInvito(_supabase, session.user.id, idsSelezionati);
 
                 if (risultatoPaniere) {
                     // IMPORTANTE: salviamo SUBITO la prenotazione nel database (senza
