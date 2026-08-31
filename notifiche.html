@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Notifiche - Hair Spa</title>
+    <link rel="stylesheet" href="dark-luxury.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body.dark-page {
+            background: #000;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            position: relative;
+        }
+        .form-container {
+            position: relative;
+            z-index: 1;
+            padding: 25px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .notifica-row {
+            display: flex;
+            gap: 14px;
+            padding: 18px 0;
+            border-bottom: 1px solid rgba(197, 160, 89, 0.12);
+        }
+        .notifica-puntino {
+            flex-shrink: 0;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--gold);
+            margin-top: 6px;
+        }
+        .notifica-row.letta .notifica-puntino {
+            visibility: hidden;
+        }
+        .notifica-corpo {
+            flex: 1;
+        }
+        .notifica-titolo {
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 400;
+            margin-bottom: 4px;
+        }
+        .notifica-row.letta .notifica-titolo {
+            color: var(--text-secondary);
+            font-weight: 300;
+        }
+        .notifica-testo {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            line-height: 1.5;
+            margin-bottom: 6px;
+        }
+        .notifica-data {
+            color: #666;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body class="dark-page">
+    <div class="form-container">
+        <nav class="top-nav" style="position: relative; padding: 0; display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <a href="area-riservata.html" class="btn-back">Indietro</a>
+        </nav>
+
+        <h1 class="page-title" style="margin-bottom: 25px; font-weight: 200; letter-spacing: 6px; text-align:center;">NOTIFICHE</h1>
+
+        <div id="listaNotifiche"></div>
+
+        <div id="statoVuoto" style="display:none; text-align:center; opacity:0.5; padding: 50px 0;">
+            <div style="font-size: 1.6rem; margin-bottom: 12px;">🔔</div>
+            <p style="font-size:0.8rem; letter-spacing: 0.5px;">Non hai ancora ricevuto notifiche.</p>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="notifiche.js"></script>
+    <script src="bottom-nav.js"></script>
+</body>
+</html>

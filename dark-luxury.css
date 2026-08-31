@@ -396,6 +396,16 @@ body {
   align-items: center;
   z-index: 1000;
 }
+.bn-badge {
+  position: absolute;
+  top: -2px;
+  right: -6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 4px rgba(197, 160, 89, 0.6);
+}
 
 .bn-item {
   display: flex;
