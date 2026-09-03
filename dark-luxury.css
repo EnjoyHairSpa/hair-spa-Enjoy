@@ -20,8 +20,8 @@ body {
     font-family: var(--font-family);
     margin: 0;
     overflow-x: hidden;
+    padding-top: 70px; /* spazio per il bottone indietro fisso */
 }
-
 /* --- 2. TOP NAVIGATION (NAVIGAZIONE ALTA) --- */
 .top-nav {
     position: absolute;
