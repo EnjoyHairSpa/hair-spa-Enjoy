@@ -10,6 +10,9 @@
     --border-color: #222222;
     --font-family: 'Inter', sans-serif;
 }
+*, *::before, *::after {
+    box-sizing: border-box;
+}
 
 body {
     background-color: var(--bg-color);
