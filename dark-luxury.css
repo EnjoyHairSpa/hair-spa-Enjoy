@@ -50,24 +50,43 @@ body {
     color: #000;
 }
 
-/* --- AGGIUNTA TASTO INDIETRO --- */
+/* --- TASTO INDIETRO - FISSO, PIÙ GRANDE, CON ICONA --- */
 .btn-back {
-    background: rgba(0, 0, 0, 0.6);
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 500;
+    background: rgba(0, 0, 0, 0.75);
     border: 1px solid var(--gold);
     color: var(--gold);
-    padding: 10px 20px;
+    padding: 12px 22px;
+    min-height: 44px;
+    min-width: 44px;
     border-radius: 50px;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 2px;
     cursor: pointer;
     backdrop-filter: blur(10px);
     transition: 0.3s;
-    text-decoration: none; /* Rimuove la sottolineatura del link */
+    text-decoration: none;
     display: inline-flex;
     align-items: center;
+    gap: 8px;
+    box-sizing: border-box;
 }
 
+.btn-back::before {
+    content: "←";
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.btn-back:hover,
+.btn-back:active {
+    background: var(--gold);
+    color: #000;
+}
 .btn-back:hover {
     background: var(--gold);
     color: #000;

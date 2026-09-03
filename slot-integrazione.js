@@ -69,13 +69,14 @@ async function apriPopupSlot(ctx) {
         pulsantiIniziali.classList.add('nascosto');
 
         if (esito.vinto) {
-            risultatoEl.innerHTML =
-                `🎁 <strong>Hai vinto: ${esito.nome_servizio}</strong><br>` +
-                `Buono € ${esito.valore_buono.toFixed(2)}<br>` +
-                `<span style="font-size:0.75rem; color:#999;">Valido solo per questo appuntamento</span>`;
-
+risultatoEl.innerHTML =
+    `🎁 <strong>Hai vinto: ${esito.nome_servizio}</strong><br>` +
+    `Buono € ${esito.valore_buono.toFixed(2)}<br>` +
+    `<div style="margin-top:12px; padding:10px 14px; background:rgba(212,175,55,0.12); border:1px solid var(--gold); border-radius:10px; color:var(--gold); font-weight:bold; font-size:0.85rem; letter-spacing:0.5px; text-transform:uppercase;">` +
+    `Accetta ed inserisci nell'attuale appuntamento` +
+    `</div>`;
             confermaEl.innerHTML = `
-                <p class="slot-risultato">Sei sicura di voler aggiungere questo premio alla prenotazione?</p>
+                <p class="slot-risultato">Cliccando si inserirai questo premio alla prenotazione?</p>
                 <div class="slot-pulsanti">
                     <button class="slot-btn slot-btn-principale" id="btnConfermaSi">SÌ, AGGIUNGI</button>
                     <button class="slot-btn" id="btnConfermaNo">NO, GRAZIE</button>
