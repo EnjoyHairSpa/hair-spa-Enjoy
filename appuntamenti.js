@@ -103,8 +103,15 @@ function renderizzaLista(lista, elementId, messaggioVuoto) {
 }
 
 function formattaDataOra(stringaData) {
-    const d = new Date(stringaData);
-    const dataLeggibile = d.toLocaleDateString('it-IT', { day: 'numeric', month: 'long' });
-    const oraLeggibile = d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-    return `${dataLeggibile} — ore ${oraLeggibile}`;
+    // Leggiamo i valori numerici alla lettera, senza conversioni di fuso orario
+    // (stesso comportamento del gestionale desktop)
+    const match = stringaData.match(/(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/);
+    if (!match) return stringaData;
+
+    const [, , mese, giorno, ore, minuti] = match;
+    const mesiIt = ['gennaio','febbraio','marzo','aprile','maggio','giugno',
+                    'luglio','agosto','settembre','ottobre','novembre','dicembre'];
+
+    const dataLeggibile = `${parseInt(giorno)} ${mesiIt[parseInt(mese) - 1]}`;
+    return `${dataLeggibile} — ore ${ore}:${minuti}`;
 }
