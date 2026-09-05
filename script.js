@@ -47,9 +47,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (params.get('auth') === 'required' && authModal) {
             authModal.style.setProperty('display', 'flex', 'important');
             if (authMessage) authMessage.innerText = "Accesso richiesto per prenotare.";
+            window.history.replaceState({}, '', 'index.html');
         }
     }
-
 
     // --- LOGICA B: GESTIONE MODALE (APERTURA/CHIUSURA) ---
 // --- LOGICA B: GESTIONE MODALE (APERTURA/CHIUSURA) ---

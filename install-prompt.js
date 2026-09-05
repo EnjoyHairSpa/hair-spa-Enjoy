@@ -35,6 +35,7 @@
 
     let deferredPrompt = null;
     let overlay = null;
+    let utenteHaCliccatoInstalla = false;
 
     function creaPopup(corpoHtml, testoBottoneSi, alClickSi) {
         overlay = document.createElement('div');
@@ -155,6 +156,20 @@
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
+
+        // Se la cliente aveva già cliccato "SÌ, INSTALLA" prima che l'evento arrivasse,
+        // lanciamo subito l'installazione adesso che è disponibile
+        if (utenteHaCliccatoInstalla && overlay) {
+            utenteHaCliccatoInstalla = false;
+            chiudiPopup();
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then(({ outcome }) => {
+                deferredPrompt = null;
+                if (outcome === 'accepted') {
+                    sessionStorage.setItem('installPopupChiuso', '1');
+                }
+            });
+        }
     });
 
     creaPopup(
@@ -164,8 +179,12 @@
 
     overlay.querySelector('button').onclick = async () => {
         if (!deferredPrompt) {
-            // L'evento non è ancora arrivato da Chrome: aspettiamo un istante
-            chiudiPopup();
+            // L'evento non è ancora arrivato da Chrome: mostriamo attesa,
+            // l'installazione partirà da sola appena l'evento arriva (vedi sopra)
+            utenteHaCliccatoInstalla = true;
+            const btn = overlay.querySelector('button');
+            btn.innerText = 'UN ATTIMO...';
+            btn.disabled = true;
             return;
         }
         chiudiPopup();
