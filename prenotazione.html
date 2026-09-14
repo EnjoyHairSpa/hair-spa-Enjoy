@@ -88,7 +88,35 @@
             padding: 0 10px;
             margin-bottom: 20px;
         }
-    </style>
+
+        /* ---------------------------------------------------- */
+        /* NUOVI STILI PER IL TESTO LAMPEGGIANTE (BLINKING)   */
+        /* ---------------------------------------------------- */
+        
+        /* Definizione dell'animazione: passa da opacità 1 (visibile) a 0 (invisibile) */
+        @keyframes blink-animation {
+            0% { opacity: 1.0; }
+            50% { opacity: 0.0; }
+            100% { opacity: 1.0; }
+        }
+
+        /* Classe CSS da applicare al testo: 
+           - esegue 'blink-animation'
+           - dura 1 secondo per ciclo
+           - usa una curva di velocità lineare
+           - si ripete all'infinito */
+@keyframes blink-animation {
+    0% { opacity: 1.0; }
+    50% { opacity: 0.2; } /* Se vuoi che sfumi senza sparire del tutto, usa 0.2 al posto di 0 */
+    100% { opacity: 1.0; }
+}
+
+.blinking-text {
+    animation: blink-animation 1.2s ease-in-out infinite;
+    display: block; /* Forza il testo ad andare a capo come blocco unico */
+    margin: 10px 0; /* Aggiunge uno spazio sopra e sotto per staccarlo bene dal resto */
+    font-weight: bold; /* Opzionale: rende il testo in grassetto per maggiore risalto */
+}    </style>
 </head>
 <body class="dark-page">
     
@@ -106,11 +134,15 @@
 
         <form id="prenotazioneForm">
             
-            <p class="section-luxury-label">
-                Consigliamo di prenotare la consulenza per la prima visita in salone per decidere insieme i servizi più adatti alle tue esigenze.
-            </p>
-
-            <div class="consulenza-box" style="display: none !important;">
+<p class="section-luxury-label">
+    Consigliamo di prenotare la consulenza per la prima visita in salone per decidere insieme i servizi più adatti alle tue esigenze.
+    
+    <span class="blinking-text">
+        ⭐ SELEZIONA TUTTI I SERVIZI CHE EFFETTUERAI DURANTE LA VISITA. ⭐
+    </span>
+    
+    Es: (piega, taglio, rituale, ecc.)
+</p>            <div class="consulenza-box" style="display: none !important;">
                 <div>
                     <strong style="color: var(--gold); display: block; font-size: 0.9rem; letter-spacing: 1px;">Consulenza Sensoriale</strong>
                     <small style="color: #777;">Analisi cute e capelli (Consigliata)</small>
