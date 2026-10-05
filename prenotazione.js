@@ -31,17 +31,12 @@ window.BookingHelper = window.BookingHelper || {
         return encodeURIComponent(testo);
     },
 
-    // Salva SOLO nel database (nessuna apertura WhatsApp). Usata quando serve
-    // garantire il salvataggio immediato prima di far girare la slot.
     async inserisciPrenotazione(supabase, righe) {
         const { error } = await supabase.from('bookings').insert(righe);
         if (error) throw new Error("Errore database: " + error.message);
         return true;
     },
 
-    // Apre SOLO WhatsApp (nessun salvataggio). Usata quando il salvataggio
-    // è già avvenuto prima e vogliamo solo notificare il salone, eventualmente
-    // dopo aver saputo l'esito della slot.
     apriWhatsApp({ session, profilo, numeroWA, dataVal, oraVal, noteVal, nomiServizi, premioVintoTesto }) {
         const messaggio = this.formatWA({
             nome: profilo.nome || "Cliente",
@@ -58,8 +53,6 @@ window.BookingHelper = window.BookingHelper || {
         window.open(`https://wa.me/${numeroWA}?text=${messaggio}`, '_blank');
     },
 
-    // Comodo wrapper per il caso SENZA slot: salva e apre WhatsApp insieme,
-    // come si faceva prima dell'introduzione della slot machine.
     async invia(supabase, ctx) {
         await this.inserisciPrenotazione(supabase, ctx.righe);
         this.apriWhatsApp(ctx);
@@ -92,13 +85,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     const container = document.getElementById('servizi-dinamici');
     const { data: servizi } = await _supabase.from('services').select('*').order('categoria');
 
-    // Mappa id -> nome_servizio, usata dalla slot per riconoscere l'icona e mostrare il nome vinto
     const mappaServizi = {};
     (servizi || []).forEach(s => { mappaServizi[s.id] = s.nome_servizio; });
 
     if (servizi && container) {
         container.innerHTML = "";
-        const categorie = [...new Set(servizi.map(s => s.categoria))];
+        // Escludiamo la categoria 'Detersione' per non farla scegliere a mano
+        const categorie = [...new Set(servizi.map(s => s.categoria))]
+            .filter(cat => cat !== 'Detersione');
 
         categorie.forEach(cat => {
             const wrapper = document.createElement('div');
@@ -112,10 +106,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             const content = wrapper.querySelector('.cat-content');
 
             servizi.filter(s => s.categoria === cat).forEach(s => {
+                const isPiega = cat.toLowerCase().includes('piega') || s.nome_servizio.toLowerCase().includes('piega');
                 content.innerHTML += `
                     <label class="radio-item">
                         <span>${s.nome_servizio}</span>
                         <input type="radio" name="${cat}" value="${s.nome_servizio}"
+                               class="${isPiega ? 'radio-piega' : ''}"
                                data-id="${s.id}"
                                data-guid="${s.guid_locale || ''}">
                     </label>`;
@@ -169,6 +165,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const dataOraISO = `${dataVal}T${oraVal}:00`;
                 const codiceUnivoco = generaCodiceCloud();
 
+                // Costruiamo la lista base delle righe selezionate dall'utente
                 const righe = Array.from(selectedRadios).map(radio => ({
                     cliente_id: session.user.id,
                     servizio_id: parseInt(radio.dataset.id),
@@ -178,7 +175,27 @@ document.addEventListener('DOMContentLoaded', async () => {
                     cloud_request_id: codiceUnivoco
                 }));
 
-                const idsSelezionati = Array.from(selectedRadios).map(r => parseInt(r.dataset.id));
+                const nomiSelezionati = Array.from(selectedRadios).map(r => r.value);
+
+                // --- INNESTO AUTOMATICO SHAMPOO SE È PRESENTE UNA PIEGA ---
+                const haPiega = Array.from(selectedRadios).some(r => r.classList.contains('radio-piega'));
+                if (haPiega) {
+                    const servizioShampoo = (servizi || []).find(s => s.categoria === 'Detersione');
+                    if (servizioShampoo) {
+                        righe.push({
+                            cliente_id: session.user.id,
+                            servizio_id: servizioShampoo.id,
+                            guid_locale: servizioShampoo.guid_locale || '',
+                            data_ora: dataOraISO,
+                            note: noteVal,
+                            cloud_request_id: codiceUnivoco
+                        });
+                        nomiSelezionati.push("Shampoo");
+                    }
+                }
+
+                const idsSelezionati = righe.map(r => r.servizio_id);
+                const stringaNomiServizi = nomiSelezionati.join(", ");
 
                 const bookingDataBase = {
                     session,
@@ -189,21 +206,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                     noteVal
                 };
 
-                // --- CONTROLLO PANIERE SLOT (invito manuale ha precedenza, poi trigger normali) ---
+                // --- CONTROLLO PANIERE SLOT ---
                 const risultatoPaniere = await trovaPaniereOInvito(_supabase, session.user.id, idsSelezionati);
 
                 if (risultatoPaniere) {
-                    // IMPORTANTE: salviamo SUBITO la prenotazione nel database (senza
-                    // aprire WhatsApp) PRIMA di far girare la slot. Così la prenotazione
-                    // è già al sicuro qualsiasi cosa faccia la cliente durante lo spin.
-                    // WhatsApp si apre solo alla fine, DOPO l'esito della slot, per non
-                    // rubare l'attenzione dalla pagina prima che la cliente veda il popup
-                    // — e così il messaggio può includere anche l'eventuale premio vinto.
                     await window.BookingHelper.inserisciPrenotazione(_supabase, righe);
 
                     const datiPerWhatsApp = {
                         ...bookingDataBase,
-                        nomiServizi: Array.from(selectedRadios).map(r => r.value).join(", ")
+                        nomiServizi: stringaNomiServizi
                     };
 
                     apriPopupSlot({
@@ -218,8 +229,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                             setTimeout(() => { window.location.href = "index.html"; }, 1500);
                         },
                         onErrore: (error) => {
-                            // La prenotazione base è comunque già andata a buon fine:
-                            // qui segnaliamo solo che il bonus slot non si è salvato bene.
                             console.error(error);
                             alert("La prenotazione è stata inviata correttamente. " +
                                   "C'è stato un problema nel salvare il premio della slot: " + error.message);
@@ -230,11 +239,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     return;
                 }
 
-                // --- NESSUN PANIERE: INVIO NORMALE (comportamento invariato) ---
+                // --- NESSUN PANIERE: INVIO NORMALE ---
                 const bookingData = {
                     ...bookingDataBase,
                     righe,
-                    nomiServizi: Array.from(selectedRadios).map(r => r.value).join(", ")
+                    nomiServizi: stringaNomiServizi
                 };
 
                 await window.BookingHelper.invia(_supabase, bookingData);
