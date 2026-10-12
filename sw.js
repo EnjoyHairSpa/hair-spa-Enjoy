@@ -1,7 +1,7 @@
 // Service Worker - Enjoy Bio Hair Spa
 // Step 2: abilita installabilità PWA + gestione notifiche push (attivate in Step 3)
 
-const CACHE_NAME = 'enjoy-hair-spa-v1';
+const CACHE_NAME = 'enjoy-hair-spa-v1.1';
 
 // Installazione: richiesto da Chrome per considerare il sito "installabile"
 self.addEventListener('install', (event) => {
