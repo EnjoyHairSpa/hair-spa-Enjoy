@@ -135,7 +135,7 @@ servizi.filter(s => s.categoria === cat).forEach(s => {
         let totalePieghe = 0;
         document.querySelectorAll('.qty-piega').forEach(input => totalePieghe += parseInt(input.value) || 0);
 
-        if (totalePieghe >= 3) {
+        if (totalePieghe >= 2) {
             btnRichiedi.disabled = false;
             btnRichiedi.style.opacity = "1";
             msg.innerText = "✓ SOGLIA RAGGIUNTA";
@@ -143,7 +143,7 @@ servizi.filter(s => s.categoria === cat).forEach(s => {
         } else {
             btnRichiedi.disabled = true;
             btnRichiedi.style.opacity = "0.5";
-            msg.innerText = totalePieghe > 0 ? `MANCANO ${3 - totalePieghe} PIEGHE` : "";
+            msg.innerText = totalePieghe > 0 ? `MANCANO ${2 - totalePieghe} PIEGHE` : "";
             msg.style.color = "#ff4444";
         }
     };
