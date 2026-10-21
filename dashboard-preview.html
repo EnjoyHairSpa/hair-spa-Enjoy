@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Enjoy bio Hair Spa - Sensorial Experience</title>
+    <link rel="icon" type="image/png" href="logo chiaro.png">
+    <link rel="stylesheet" href="dark-luxury.css">
+    <link rel="stylesheet" href="dashboard-preview.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<!-- ========== TOP BAR ========== -->
+<header class="dash-topbar">
+    <button id="btnMenu" class="dash-hamburger" aria-label="Apri menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <img src="logo oro2_063930.png" alt="Enjoy Bio Hair Spa" class="dash-logo">
+    <button id="openAuth" class="dash-auth-btn">Accedi</button>
+</header>
+
+<!-- ========== MENU LATERALE ========== -->
+<div id="menuOverlay" class="dash-overlay"></div>
+<nav id="sideMenu" class="dash-sidemenu" aria-label="Menu principale">
+    <button id="btnCloseMenu" class="dash-close-menu" aria-label="Chiudi menu">&times;</button>
+    <ul>
+        <li><a href="area-riservata.html">Il mio profilo</a></li>
+        <li><a href="percorsi.html">Percorsi e pacchetti</a></li>
+        <li><a href="notifiche.html">Notifiche</a></li>
+        <li><a href="#">Premi e giochi <span class="dash-soon">presto</span></a></li>
+        <li><a href="#">Regali e voucher <span class="dash-soon">presto</span></a></li>
+        <li><a href="#">Dove siamo <span class="dash-soon">presto</span></a></li>
+        <li><a href="#">Assistenza <span class="dash-soon">presto</span></a></li>
+        <li><button id="btnLogout" class="dash-logout">Esci</button></li>
+    </ul>
+</nav>
+
+<main class="dash-main">
+
+    <!-- ========== ICONE RAPIDE ========== -->
+    <section class="dash-quicklinks">
+        <a href="prenotazione.html" class="dash-quicklink">
+            <span class="dash-quickicon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span>
+            <span>Prenota</span>
+        </a>
+        <a href="percorsi.html" class="dash-quicklink">
+            <span class="dash-quickicon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><path d="M8 18h5a4 4 0 0 0 0-8h-2a4 4 0 0 1 0-8h5"/></svg></span>
+            <span>Percorsi</span>
+        </a>
+        <a href="#" class="dash-quicklink">
+            <span class="dash-quickicon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg></span>
+            <span>Premi</span>
+        </a>
+        <a href="#" class="dash-quicklink">
+            <span class="dash-quickicon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v9h14v-9M12 8c-2-4-6-3-5 0M12 8c2-4 6-3 5 0"/></svg></span>
+            <span>Regali</span>
+            <span class="dash-soon">presto</span>
+        </a>
+    </section>
+
+    <!-- ========== RICERCA ========== -->
+    <section class="dash-search">
+        <input type="search" placeholder="Cerca servizi, prodotti..." aria-label="Cerca">
+    </section>
+
+    <!-- ========== RIPRENOTA (visibile solo se c'è uno storico) ========== -->
+    <section id="rebookSection" class="dash-rebook" style="display:none;">
+        <div class="dash-rebook-card">
+            <div>
+                <span class="dash-rebook-label">La tua ultima volta</span>
+                <p id="rebookServices" class="dash-rebook-services"></p>
+            </div>
+            <a href="prenotazione.html" class="elegant-btn">Riprenota</a>
+        </div>
+    </section>
+
+    <!-- ========== IN EVIDENZA (futuro: ContenutiHome) ========== -->
+    <section class="dash-section">
+        <h3 class="dash-section-title">In evidenza</h3>
+        <div class="dash-carousel">
+            <div class="dash-card-promo"><span>Promozione</span></div>
+            <div class="dash-card-promo"><span>Consiglio del mese</span></div>
+            <div class="dash-card-promo"><span>Cura dei capelli</span></div>
+        </div>
+    </section>
+
+    <!-- ========== GIOCO DEL GIORNO ========== -->
+    <a href="#" class="dash-banner dash-banner-game">
+        <div>
+            <span class="dash-banner-title">Gioco del giorno</span>
+            <span class="dash-banner-sub">Gira e scopri il tuo premio</span>
+        </div>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2"/><path d="M12 3v7M12 14v7M3 12h7M14 12h7"/></svg>
+    </a>
+
+    <!-- ========== AREA PREMIUM (teaser statico) ========== -->
+    <div class="dash-banner dash-banner-premium">
+        <div>
+            <span class="dash-banner-title">Area Premium</span>
+            <span class="dash-banner-sub">Missioni e vantaggi esclusivi, in arrivo</span>
+        </div>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+    </div>
+
+    <!-- ========== PERCORSI CONSIGLIATI (futuro: pacchetti preimpostati) ========== -->
+    <section class="dash-section">
+        <h3 class="dash-section-title">Percorsi consigliati</h3>
+        <div class="dash-carousel">
+            <a href="percorsi.html" class="dash-card-package"><div class="dash-pkg-img"></div><span>Percorso di esempio 1</span></a>
+            <a href="percorsi.html" class="dash-card-package"><div class="dash-pkg-img"></div><span>Percorso di esempio 2</span></a>
+        </div>
+    </section>
+
+    <!-- ========== PRENOTAZIONE RAPIDA ========== -->
+    <section class="dash-section">
+        <h3 class="dash-section-title">Prenotazione rapida</h3>
+        <div class="dash-quickgrid">
+            <a href="prenotazione.html" class="dash-tile">Taglio</a>
+            <a href="prenotazione.html" class="dash-tile">Colore</a>
+            <a href="prenotazione.html" class="dash-tile">Piega</a>
+            <a href="prenotazione.html" class="dash-tile">Trattamenti</a>
+        </div>
+    </section>
+
+</main>
+
+<!-- ========== BOTTOM NAV ========== -->
+<nav class="dash-bottomnav" aria-label="Navigazione rapida">
+    <a href="dashboard-preview.html" class="active">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/></svg>
+        <span>Home</span>
+    </a>
+    <a href="#">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/><path d="M14 6v12" stroke-dasharray="2 2"/></svg>
+        <span>Biglietto</span>
+        <span class="dash-soon">presto</span>
+    </a>
+    <a href="appuntamenti.html">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+        <span>Prenotazioni</span>
+    </a>
+    <a href="#">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v9h14v-9M12 8c-2-4-6-3-5 0M12 8c2-4 6-3 5 0"/></svg>
+        <span>Regali</span>
+        <span class="dash-soon">presto</span>
+    </a>
+    <a href="area-riservata.html">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+        <span>Profilo</span>
+    </a>
+</nav>
+
+<!-- ========== MODAL LOGIN / REGISTRAZIONE (identico a index.html) ========== -->
+<div id="authModal" class="modal-overlay">
+    <div class="modal-content">
+        <span id="closeAuth" class="close-btn">&times;</span>
+
+        <div id="loginSection">
+            <h3 style="color: var(--gold); letter-spacing: 3px; font-weight: 200;">BENVENUTA</h3>
+            <p style="font-size: 0.8rem; letter-spacing: 2px; color: #666; margin-bottom: 20px;">IN ENJOY</p>
+
+            <div class="auth-form-group">
+                <input type="email" id="authEmail" placeholder="Email" class="auth-input">
+                <input type="password" id="authPassword" placeholder="Password" class="auth-input">
+
+                <button id="btnLogin" class="elegant-btn" style="width: 100%; margin-top: 10px;">Accedi</button>
+                <div style="text-align: center; margin-top: 15px;">
+<button type="button" id="btnResetPassword" style="background:none; border:none; color:var(--gold, #c5a059); cursor:pointer; font-size:0.75rem; text-transform:uppercase; text-decoration:underline; letter-spacing:1px; font-weight:500;">Password dimenticata?</button>                </div>
+<button type="button" onclick="toggleAuth(true)" class="secondary-btn" style="background:none; border:none; color:var(--gold, #c5a059); cursor:pointer; font-size:0.8rem; margin-top:20px; text-transform:uppercase; letter-spacing:1px; font-weight:500; display:block; width:100%; text-align:center;">Non hai un account? Registrati</button>            </div>
+        </div>
+
+        <div id="registerSection" style="display: none;">
+            <h3 style="color: var(--gold); letter-spacing: 3px; font-weight: 200;">IL TUO PROFILO</h3>
+            <p style="font-size: 0.7rem; letter-spacing: 2px; color: #666; margin-bottom: 20px;">UNISCITI ALL'ESPERIENZA</p>
+
+            <div class="auth-form-group">
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <input type="text" id="regName" placeholder="Nome *" class="auth-input" style="margin-bottom:0;">
+                    <input type="text" id="regSurname" placeholder="Cognome *" class="auth-input" style="margin-bottom:0;">
+                </div>
+
+                <input type="tel" id="regPhone" placeholder="Telefono *" class="auth-input">
+                <input type="email" id="regEmail" placeholder="Email *" class="auth-input">
+                <input type="password" id="regPassword" placeholder="Scegli Password *" class="auth-input">
+
+                <div style="text-align: left; margin-bottom: 10px;">
+                    <label style="font-size: 0.6rem; color: #555; text-transform: uppercase;">Data di Nascita (Opzionale)</label>
+                    <input type="date" id="regBirth" class="auth-input" style="margin-top: 5px;">
+                </div>
+
+                <div style="display: flex; align-items: flex-start; gap: 10px; margin: 15px 0; text-align: left;">
+                    <input type="checkbox" id="privacyCheck" style="margin-top: 3px;">
+                    <label for="privacyCheck" style="font-size: 0.6rem; color: #666; line-height: 1.2;">
+                        Accetto la <a href="privacy.html" target="_blank" style="color: var(--gold); text-decoration: underline; font-weight: bold;">Privacy Policy</a>
+                        e il trattamento dei dati personali ai fini della prenotazione e dei servizi Hair Spa. *
+                    </label>
+                </div>
+
+                <button id="btnDoRegister" class="elegant-btn" style="width: 100%;">Crea Account</button>
+                <button type="button" onclick="toggleAuth(false)" class="secondary-btn" style="background:none; border:none; color:#555; cursor:pointer; font-size:0.7rem; margin-top:15px; text-transform:uppercase;">Hai già un account? Accedi</button>
+            </div>
+        </div>
+
+        <p id="authMessage" class="auth-message"></p>
+    </div>
+</div>
+
+<script src="config.js"></script>
+<script src="script.js"></script>
+<script src="install-prompt.js"></script>
+<script src="dashboard-preview.js"></script>
+
+</body>
+</html>

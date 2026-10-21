@@ -1,0 +1,403 @@
+/* ==========================================================
+   dashboard-preview.css
+   Stile isolato per la nuova Dashboard — non tocca dark-luxury.css
+   Riusa la variabile --gold già definita in dark-luxury.css;
+   fallback #c9a35a se per qualche motivo non è presente.
+   ========================================================== */
+
+:root {
+  --dash-gold: var(--gold, #c9a35a);
+  --dash-bg: #141210;
+  --dash-bg-card: #1e1a15;
+  --dash-bg-card-2: #231f1a;
+  --dash-border: #3a342c;
+  --dash-text: #e9e2d3;
+  --dash-text-dim: #8a8171;
+}
+
+.dash-main {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 14px 16px 90px;
+  color: var(--dash-text);
+}
+
+/* ---------- Top bar ---------- */
+.dash-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: var(--dash-bg);
+  border-bottom: 1px solid var(--dash-border);
+}
+
+.dash-hamburger {
+  background: none;
+  border: none;
+  color: var(--dash-gold);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+}
+
+.dash-logo {
+  height: 34px;
+}
+
+.dash-auth-btn {
+  background: none;
+  border: 1px solid var(--dash-gold);
+  color: var(--dash-gold);
+  font-size: 0.72rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 7px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* ---------- Side menu ---------- */
+.dash-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  z-index: 50;
+}
+
+.dash-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.dash-sidemenu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 78%;
+  max-width: 300px;
+  background: var(--dash-bg-card);
+  border-right: 1px solid var(--dash-border);
+  transform: translateX(-100%);
+  transition: transform 0.28s ease;
+  z-index: 60;
+  padding: 20px 10px;
+  overflow-y: auto;
+}
+
+.dash-sidemenu.open {
+  transform: translateX(0);
+}
+
+.dash-close-menu {
+  background: none;
+  border: none;
+  color: var(--dash-text-dim);
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  margin-bottom: 10px;
+  padding: 4px 8px;
+}
+
+.dash-sidemenu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dash-sidemenu li {
+  border-bottom: 1px solid var(--dash-border);
+}
+
+.dash-sidemenu a,
+.dash-logout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 14px 10px;
+  color: var(--dash-text);
+  text-decoration: none;
+  font-size: 0.9rem;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dash-logout {
+  color: #c97b6a;
+}
+
+.dash-soon {
+  font-size: 0.62rem;
+  color: var(--dash-text-dim);
+  border: 1px solid var(--dash-border);
+  border-radius: 10px;
+  padding: 2px 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ---------- Quick links (4 icone rapide) ---------- */
+.dash-quicklinks {
+  display: flex;
+  justify-content: space-between;
+  margin: 18px 0 16px;
+}
+
+.dash-quicklink {
+  width: 23%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: var(--dash-text);
+  position: relative;
+}
+
+.dash-quickicon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--dash-bg-card-2);
+  border: 1px solid var(--dash-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dash-gold);
+}
+
+.dash-quicklink span:nth-child(2) {
+  font-size: 0.68rem;
+  text-align: center;
+}
+
+.dash-quicklink .dash-soon {
+  position: absolute;
+  top: -6px;
+  right: 2px;
+}
+
+/* ---------- Search ---------- */
+.dash-search {
+  margin-bottom: 18px;
+}
+
+.dash-search input {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--dash-bg-card);
+  border: 1px solid var(--dash-border);
+  border-radius: 24px;
+  padding: 11px 18px;
+  color: var(--dash-text);
+  font-size: 0.85rem;
+}
+
+.dash-search input::placeholder {
+  color: var(--dash-text-dim);
+}
+
+/* ---------- Riprenota ---------- */
+.dash-rebook {
+  margin-bottom: 18px;
+}
+
+.dash-rebook-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--dash-bg-card);
+  border: 1px solid var(--dash-border);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+
+.dash-rebook-label {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--dash-text-dim);
+  margin-bottom: 3px;
+}
+
+.dash-rebook-services {
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* ---------- Sezioni generiche + caroselli ---------- */
+.dash-section {
+  margin-bottom: 20px;
+}
+
+.dash-section-title {
+  font-size: 0.78rem;
+  letter-spacing: 1px;
+  color: var(--dash-text-dim);
+  margin: 0 0 10px;
+  font-weight: 400;
+}
+
+.dash-carousel {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.dash-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.dash-card-promo {
+  min-width: 150px;
+  height: 95px;
+  border-radius: 12px;
+  border: 1px solid var(--dash-border);
+  background: var(--dash-bg-card-2);
+  display: flex;
+  align-items: flex-end;
+  padding: 10px;
+  flex-shrink: 0;
+}
+
+.dash-card-promo span {
+  font-size: 0.72rem;
+  color: var(--dash-gold);
+}
+
+.dash-card-package {
+  min-width: 170px;
+  border-radius: 12px;
+  border: 1px solid var(--dash-border);
+  background: var(--dash-bg-card-2);
+  padding: 12px;
+  flex-shrink: 0;
+  text-decoration: none;
+  color: var(--dash-text);
+  display: block;
+}
+
+.dash-card-package .dash-pkg-img {
+  height: 70px;
+  border-radius: 8px;
+  background: #2a2118;
+  margin-bottom: 8px;
+}
+
+.dash-card-package span {
+  font-size: 0.78rem;
+}
+
+/* ---------- Banner (gioco / premium) ---------- */
+.dash-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  text-decoration: none;
+  color: var(--dash-text);
+}
+
+.dash-banner-game {
+  border: 1px solid var(--dash-gold);
+  background: rgba(201, 163, 90, 0.06);
+}
+
+.dash-banner-premium {
+  border: 1px solid #4a3f2b;
+  background: var(--dash-bg-card);
+}
+
+.dash-banner-title {
+  display: block;
+  font-size: 0.85rem;
+}
+
+.dash-banner-sub {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--dash-text-dim);
+  margin-top: 2px;
+}
+
+.dash-banner svg {
+  color: var(--dash-gold);
+  flex-shrink: 0;
+}
+
+.dash-banner-premium svg {
+  color: var(--dash-text-dim);
+}
+
+/* ---------- Griglia prenotazione rapida ---------- */
+.dash-quickgrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.dash-tile {
+  background: var(--dash-bg-card-2);
+  border: 1px solid var(--dash-border);
+  border-radius: 12px;
+  padding: 16px 10px;
+  text-align: center;
+  color: var(--dash-text);
+  text-decoration: none;
+  font-size: 0.8rem;
+}
+
+/* ---------- Bottom nav ---------- */
+.dash-bottomnav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  display: flex;
+  justify-content: space-around;
+  background: var(--dash-bg);
+  border-top: 1px solid var(--dash-border);
+  padding: 8px 6px calc(8px + env(safe-area-inset-bottom, 0px));
+}
+
+.dash-bottomnav a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  color: var(--dash-text-dim);
+  text-decoration: none;
+  font-size: 0.62rem;
+  position: relative;
+  padding: 2px 6px;
+}
+
+.dash-bottomnav a.active {
+  color: var(--dash-gold);
+}
+
+.dash-bottomnav .dash-soon {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  padding: 1px 4px;
+  font-size: 0.52rem;
+}
