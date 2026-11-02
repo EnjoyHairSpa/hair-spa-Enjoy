@@ -126,6 +126,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
   caricaPacchetti();
 
+  // ---------- Prenotazione rapida: riquadri dalle categorie reali ----------
+  // Categorie distinte dei servizi visibili, in ordine alfabetico.
+  // Il tap apre prenotazione.html?categoria=... (la pagina deve leggere il parametro).
+  async function caricaCategorie() {
+    const sezione = document.getElementById('quickBookSection');
+    const griglia = document.getElementById('quickGrid');
+    if (!sezione || !griglia) return;
+
+    try {
+      const { data, error } = await _supabase
+        .from('services')
+        .select('categoria')
+        .eq('visibile', true);
+
+      if (error) throw error;
+
+      const categorie = [...new Set(
+        (data || [])
+          .map(r => (r.categoria || '').trim())
+          .filter(c => c.length > 0)
+      )].sort((a, b) => a.localeCompare(b, 'it'));
+
+      if (categorie.length === 0) return;
+
+      griglia.innerHTML = '';
+      categorie.forEach(cat => {
+        const tile = document.createElement('a');
+        tile.className = 'dash-tile';
+        tile.href = 'prenotazione.html?categoria=' + encodeURIComponent(cat);
+        tile.textContent = cat;
+        griglia.appendChild(tile);
+      });
+
+      sezione.style.display = 'block';
+    } catch (err) {
+      console.error('Errore caricamento categorie:', err);
+    }
+  }
+
+  caricaCategorie();
+
   // ---------- Stato utente (riuso logica già testata in index.html) ----------
   (async () => {
     const { data: { user } } = await _supabase.auth.getUser();
