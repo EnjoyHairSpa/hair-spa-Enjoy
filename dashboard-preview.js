@@ -60,6 +60,72 @@ document.addEventListener('DOMContentLoaded', () => {
     section.style.display = 'block';
   }
 
+  // ---------- Carosello pacchetti consigliati ----------
+  // Stessa query e stesso filtro di pacchetti.js: solo pacchetti attivi
+  // e con almeno un servizio. Se non ce n'è nessuno, la sezione resta nascosta.
+  const formatoEuro = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' });
+
+  async function caricaPacchetti() {
+    const sezione = document.getElementById('packagesSection');
+    const contenitore = document.getElementById('packagesCarousel');
+    if (!sezione || !contenitore) return;
+
+    try {
+      const { data, error } = await _supabase
+        .from('pacchetti_preimpostati')
+        .select('id, nome_pacchetto, prezzo, immagine_url, ordine, pacchetti_preimpostati_servizi(servizio_id)')
+        .eq('attivo', true)
+        .order('ordine', { ascending: true });
+
+      if (error) throw error;
+
+      const pacchetti = (data || []).filter(
+        p => (p.pacchetti_preimpostati_servizi || []).length > 0
+      );
+      if (pacchetti.length === 0) return;
+
+      contenitore.innerHTML = '';
+
+      pacchetti.forEach(p => {
+        const card = document.createElement('a');
+        card.className = 'dash-card-package';
+        card.href = 'pacchetti.html?id=' + encodeURIComponent(p.id);
+
+        if (p.immagine_url) {
+          const img = document.createElement('img');
+          img.className = 'dash-pkg-photo';
+          img.src = p.immagine_url;
+          img.alt = p.nome_pacchetto;
+          img.loading = 'lazy';
+          card.appendChild(img);
+        } else {
+          const ph = document.createElement('div');
+          ph.className = 'dash-pkg-img';
+          ph.textContent = '✦';
+          card.appendChild(ph);
+        }
+
+        const nome = document.createElement('span');
+        nome.className = 'dash-pkg-name';
+        nome.textContent = p.nome_pacchetto;
+        card.appendChild(nome);
+
+        const prezzo = document.createElement('span');
+        prezzo.className = 'dash-pkg-price';
+        prezzo.textContent = formatoEuro.format(p.prezzo);
+        card.appendChild(prezzo);
+
+        contenitore.appendChild(card);
+      });
+
+      sezione.style.display = 'block';
+    } catch (err) {
+      console.error('Errore caricamento pacchetti:', err);
+    }
+  }
+
+  caricaPacchetti();
+
   // ---------- Stato utente (riuso logica già testata in index.html) ----------
   (async () => {
     const { data: { user } } = await _supabase.auth.getUser();

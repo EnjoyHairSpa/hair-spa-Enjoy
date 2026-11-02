@@ -281,7 +281,9 @@
 }
 
 .dash-card-package {
+  width: 170px;
   min-width: 170px;
+  box-sizing: border-box;
   border-radius: 12px;
   border: 1px solid var(--dash-border);
   background: var(--dash-bg-card-2);
@@ -293,14 +295,36 @@
 }
 
 .dash-card-package .dash-pkg-img {
-  height: 70px;
+  aspect-ratio: 2 / 1;
   border-radius: 8px;
   background: #2a2118;
   margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dash-gold);
+  font-size: 1.3rem;
 }
 
-.dash-card-package span {
+.dash-card-package .dash-pkg-photo {
+  display: block;
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.dash-card-package .dash-pkg-name {
+  display: block;
   font-size: 0.78rem;
+}
+
+.dash-card-package .dash-pkg-price {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--dash-gold);
+  margin-top: 2px;
 }
 
 /* ---------- Banner (gioco / premium) ---------- */
