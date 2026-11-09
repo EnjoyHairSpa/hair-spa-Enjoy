@@ -425,3 +425,23 @@
   padding: 1px 4px;
   font-size: 0.52rem;
 }
+
+/* ---------- Riquadri prenotazione rapida (preselezioni) ---------- */
+.dash-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+}
+
+.dash-tile-name {
+  font-size: 0.82rem;
+  color: var(--dash-text);
+}
+
+.dash-tile-sub {
+  font-size: 0.62rem;
+  color: var(--dash-text-dim);
+  line-height: 1.3;
+}

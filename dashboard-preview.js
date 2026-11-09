@@ -126,46 +126,58 @@ document.addEventListener('DOMContentLoaded', () => {
 
   caricaPacchetti();
 
-  // ---------- Prenotazione rapida: riquadri dalle categorie reali ----------
-  // Categorie distinte dei servizi visibili, in ordine alfabetico.
-  // Il tap apre prenotazione.html?categoria=... (la pagina deve leggere il parametro).
-  async function caricaCategorie() {
+  // ---------- Prenotazione rapida: preselezioni create dal gestionale ----------
+  // Mostra le prenotazioni preimpostate attive in cui tutti i servizi esistono e sono visibili.
+  // Il tap apre prenotazione.html?servizi=id1,id2 (la pagina deve leggere il parametro).
+  async function caricaPreselezioni() {
     const sezione = document.getElementById('quickBookSection');
     const griglia = document.getElementById('quickGrid');
     if (!sezione || !griglia) return;
 
     try {
       const { data, error } = await _supabase
-        .from('services')
-        .select('categoria')
-        .eq('visibile', true);
+        .from('prenotazioni_preimpostate')
+        .select('id, nome_prenotazione, ordine, prenotazioni_preimpostate_servizi(servizio_id, services(id, nome_servizio, visibile))')
+        .eq('attivo', true)
+        .order('ordine', { ascending: true });
 
       if (error) throw error;
 
-      const categorie = [...new Set(
-        (data || [])
-          .map(r => (r.categoria || '').trim())
-          .filter(c => c.length > 0)
-      )].sort((a, b) => a.localeCompare(b, 'it'));
+      const preselezioni = (data || [])
+        .map(p => ({
+          ...p,
+          servizi: (p.prenotazioni_preimpostate_servizi || []).map(c => c.services)
+        }))
+        .filter(p => p.servizi.length > 0 && p.servizi.every(s => s && s.visibile === true));
 
-      if (categorie.length === 0) return;
+      if (preselezioni.length === 0) return;
 
       griglia.innerHTML = '';
-      categorie.forEach(cat => {
+      preselezioni.forEach(p => {
         const tile = document.createElement('a');
         tile.className = 'dash-tile';
-        tile.href = 'prenotazione.html?categoria=' + encodeURIComponent(cat);
-        tile.textContent = cat;
+        tile.href = 'prenotazione.html?servizi=' + p.servizi.map(s => s.id).join(',');
+
+        const nome = document.createElement('span');
+        nome.className = 'dash-tile-name';
+        nome.textContent = p.nome_prenotazione;
+        tile.appendChild(nome);
+
+        const dettaglio = document.createElement('span');
+        dettaglio.className = 'dash-tile-sub';
+        dettaglio.textContent = p.servizi.map(s => s.nome_servizio).join(' \u00b7 ');
+        tile.appendChild(dettaglio);
+
         griglia.appendChild(tile);
       });
 
       sezione.style.display = 'block';
     } catch (err) {
-      console.error('Errore caricamento categorie:', err);
+      console.error('Errore caricamento prenotazioni preimpostate:', err);
     }
   }
 
-  caricaCategorie();
+  caricaPreselezioni();
 
   // ---------- Stato utente (riuso logica già testata in index.html) ----------
   (async () => {
