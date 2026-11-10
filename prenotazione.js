@@ -140,6 +140,44 @@ document.addEventListener('DOMContentLoaded', async () => {
             container.appendChild(wrapper);
         });
     }
+        // --- PRESELEZIONE SERVIZI DA LINK (?servizi=47,45) ---
+    // Usata dai riquadri "Prenotazione rapida" della home: segna i servizi indicati,
+    // apre le categorie che li contengono e lascia la cliente libera di cambiare o aggiungere.
+    (function applicaPreselezione() {
+        const parametro = new URLSearchParams(window.location.search).get('servizi');
+        if (!parametro || !container) return;
+
+        const ids = [...new Set(
+            parametro.split(',')
+                .map(v => parseInt(v, 10))
+                .filter(n => Number.isInteger(n) && n > 0)
+        )].slice(0, 20);
+
+        let selezionati = 0;
+        ids.forEach(id => {
+            const radio = container.querySelector(`input[type="radio"][data-id="${id}"]`);
+            if (!radio) return; // servizio non esistente o non selezionabile: lo ignoro
+
+            radio.checked = true;
+            radio._eraSelezionato = true; // così un secondo tap lo deseleziona, come per gli altri
+
+            const content = radio.closest('.cat-content');
+            const wrapper = radio.closest('.accordion-item');
+            if (content) content.style.display = 'block';
+            if (wrapper) {
+                const freccia = wrapper.querySelector('.arrow');
+                if (freccia) freccia.style.transform = 'rotate(180deg)';
+            }
+            selezionati++;
+        });
+
+        if (selezionati > 0) {
+            const avviso = document.createElement('p');
+            avviso.style.cssText = 'text-align:center; color:var(--gold); font-size:0.8rem; font-style:italic; margin:0 0 15px;';
+            avviso.textContent = 'Abbiamo già selezionato i servizi per te: puoi aggiungerne altri, poi scegli data e ora.';
+            container.parentNode.insertBefore(avviso, container);
+        }
+    })();
 
     // --- GESTIONE INVIO FORM ---
     const form = document.getElementById('prenotazioneForm');
