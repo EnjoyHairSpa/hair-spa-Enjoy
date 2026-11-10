@@ -36,27 +36,75 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ---------- Riprenota ultimi servizi ----------
-  // TODO: questa è solo l'impalcatura. Vanno confermati i nomi
-  // reali di tabelle/colonne prima di renderla definitiva:
-  // - tabella prenotazioni lato Supabase
-  // - campo che collega la prenotazione al cliente loggato
-  // - campo/relazione per i servizi associati alla prenotazione
-  // - campo data, per prendere la più recente
+  // Prende l'ultima visita già passata della cliente loggata (le righe di bookings con lo
+  // stesso cloud_request_id sono la stessa visita) e propone gli stessi servizi.
+  // Metti false per provare anche con visite future (utile solo nei test).
+  const SOLO_VISITE_PASSATE = true;
+
   async function provaCaricaUltimoAppuntamento(user) {
     try {
-      // Finché non è confermato lo schema, la sezione resta nascosta.
-      return null;
+      let query = _supabase
+        .from('bookings')
+        .select('cloud_request_id, data_ora, servizio_id')
+        .eq('cliente_id', user.id)
+        .order('data_ora', { ascending: false })
+        .limit(40);
+
+      if (SOLO_VISITE_PASSATE) query = query.lte('data_ora', new Date().toISOString());
+
+      const { data: righe, error } = await query;
+      if (error) throw error;
+      if (!righe || righe.length === 0) return null;
+
+      // Righe della stessa visita: stesso codice (o, se manca, stessa data e ora)
+      const chiave = r => r.cloud_request_id || r.data_ora;
+      const chiaveUltima = chiave(righe[0]);
+      const visita = righe.filter(r => chiave(r) === chiaveUltima);
+      const idsVisita = [...new Set(visita.map(r => r.servizio_id))];
+
+      const { data: servizi, error: errServizi } = await _supabase
+        .from('services')
+        .select('id, nome_servizio, categoria, visibile')
+        .in('id', idsVisita);
+      if (errServizi) throw errServizi;
+
+      // Come nella pagina prenotazione: niente "Detersione" (lo shampoo si aggiunge da solo con la piega),
+      // solo servizi ancora visibili e un solo servizio per categoria (un radio per categoria).
+      const perId = new Map((servizi || []).map(s => [s.id, s]));
+      const categorieUsate = new Set();
+      const scelti = [];
+      idsVisita.forEach(id => {
+        const s = perId.get(id);
+        if (!s || s.visibile !== true || s.categoria === 'Detersione') return;
+        if (categorieUsate.has(s.categoria)) return;
+        categorieUsate.add(s.categoria);
+        scelti.push(s);
+      });
+
+      if (scelti.length === 0) return null;
+
+      return {
+        data: visita[0].data_ora,
+        ids: scelti.map(s => s.id),
+        nomi: scelti.map(s => s.nome_servizio)
+      };
     } catch (err) {
       console.error('Errore caricamento ultimo appuntamento:', err);
       return null;
     }
   }
 
-  function mostraSezioneRiprenota(elencoServizi) {
+  function mostraSezioneRiprenota(ultimo) {
     const section = document.getElementById('rebookSection');
+    const etichetta = document.getElementById('rebookLabel');
     const testo = document.getElementById('rebookServices');
-    if (!section || !testo || !elencoServizi) return;
-    testo.textContent = elencoServizi;
+    const link = document.getElementById('rebookLink');
+    if (!section || !testo || !link || !ultimo) return;
+
+    const giorno = new Date(ultimo.data).toLocaleDateString('it-IT', { day: 'numeric', month: 'long' });
+    if (etichetta) etichetta.textContent = 'La tua ultima volta \u00b7 ' + giorno;
+    testo.textContent = ultimo.nomi.join(' \u00b7 ');
+    link.href = 'prenotazione.html?servizi=' + ultimo.ids.join(',');
     section.style.display = 'block';
   }
 
