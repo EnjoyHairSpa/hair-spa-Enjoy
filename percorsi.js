@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (profilo && welcomeUser) welcomeUser.innerText = `Benvenuta, ${profilo.nome}`;
 
     // --- CARICAMENTO SERVIZI ---
-    const { data: servizi } = await _supabase.from('services').select('*').order('categoria');
+    const { data: servizi } = await _supabase.from('services').select('*').eq('visibile', true).order('categoria');
     
     if (servizi && extraContainer) {
         extraContainer.innerHTML = "";
