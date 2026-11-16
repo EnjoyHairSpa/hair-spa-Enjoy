@@ -83,8 +83,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- CARICAMENTO SERVIZI DINAMICI ---
     const container = document.getElementById('servizi-dinamici');
-    const { data: servizi } = await _supabase.from('services').select('*').order('categoria');
-
+    const { data: servizi } = await _supabase.from('services').select('*').eq('visibile', true).order('categoria');
     const mappaServizi = {};
     (servizi || []).forEach(s => { mappaServizi[s.id] = s.nome_servizio; });
 
