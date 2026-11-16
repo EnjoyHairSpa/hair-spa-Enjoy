@@ -121,16 +121,15 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const { data, error } = await _supabase
         .from('pacchetti_preimpostati')
-        .select('id, nome_pacchetto, prezzo, immagine_url, ordine, pacchetti_preimpostati_servizi(servizio_id)')
-        .eq('attivo', true)
+        .select('id, nome_pacchetto, prezzo, immagine_url, ordine, pacchetti_preimpostati_servizi(servizio_id, services(visibile))')        .eq('attivo', true)
         .order('ordine', { ascending: true });
 
       if (error) throw error;
 
-      const pacchetti = (data || []).filter(
-        p => (p.pacchetti_preimpostati_servizi || []).length > 0
-      );
-      if (pacchetti.length === 0) return;
+const pacchetti = (data || []).filter(p => {
+  const righe = p.pacchetti_preimpostati_servizi || [];
+  return righe.length > 0 && righe.every(r => r.services && r.services.visibile === true);
+});      if (pacchetti.length === 0) return;
 
       contenitore.innerHTML = '';
 
