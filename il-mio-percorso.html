@@ -41,6 +41,32 @@
             color: var(--lux-ivory);
         }
 
+                body.dark-page {
+            background:
+                linear-gradient(rgba(12,12,11,.88), rgba(12,12,11,.94)),
+                url('lista.png') center center / cover fixed;
+
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            color: var(--lux-ivory);
+        }
+
+        body.dark-page::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(
+                    ellipse at 50% 0%,
+                    rgba(201,173,120,.09),
+                    transparent 55%
+                );
+            pointer-events: none;
+            z-index: 0;
+        }
+
+
         body.dark-page::before {
             content: "";
             position: fixed;
