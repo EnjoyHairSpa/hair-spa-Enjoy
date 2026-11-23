@@ -1,5 +1,6 @@
+
 // il-mio-percorso.js
-// Mostra alla cliente la proposta in attesa di risposta (se c'è) e lo storico delle richieste.
+// Mostra alla cliente la proposta in attesa di risposta e lo storico delle richieste.
 
 document.addEventListener('DOMContentLoaded', async () => {
     const { data: { session } } = await _supabase.auth.getSession();
@@ -12,6 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const scaduti = await caricaPercorsoAttivo(session.user.id);
     await caricaStoricoPercorsi(session.user.id, scaduti);
 });
+
 async function caricaRichieste(userId) {
     const { data: richieste, error } = await _supabase
         .from('richieste_percorsi')
@@ -40,21 +42,58 @@ function renderizzaProposta(richieste, userId) {
     }
 
     const servizi = proposta.dettagli_percorso?.servizi || [];
-    const listaServizi = servizi.map(s => `<li>${s.qty}x ${s.servizio}</li>`).join('');
+
+    const listaServizi = servizi.map(s => `
+        <li>
+            <span class="servizio-quantita">${s.qty}×</span>
+            <span>${s.servizio}</span>
+        </li>
+    `).join('');
+
     const prezzo = proposta.prezzo_totale != null
-        ? new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(proposta.prezzo_totale)
+        ? new Intl.NumberFormat('it-IT', {
+            style: 'currency',
+            currency: 'EUR'
+        }).format(proposta.prezzo_totale)
         : '-';
 
     container.innerHTML = `
         <div class="proposta-card">
-            <span class="proposta-titolo">La tua proposta è pronta</span>
+
+            <span class="proposta-titolo">
+                <span class="proposta-punto"></span>
+                PROPOSTA PERSONALIZZATA
+            </span>
+
+            <h2 class="proposta-heading">
+                La tua esperienza<br>di bellezza
+            </h2>
+
+            <div class="prezzo-label">INVESTIMENTO DEL PERCORSO</div>
             <div class="proposta-prezzo">${prezzo}</div>
+
+            <div class="card-divider"></div>
+
+            <div class="servizi-heading">IL TUO PERCORSO COMPRENDE</div>
+
             <ul class="proposta-servizi">${listaServizi}</ul>
-            ${proposta.note ? `<p style="color:#888; font-size:0.8rem; font-style:italic;">"${proposta.note}"</p>` : ''}
+
+            ${proposta.note ? `
+                <div class="proposta-note">
+                    <span>Una nota per te</span>
+                    <p>"${proposta.note}"</p>
+                </div>
+            ` : ''}
+
             <div class="proposta-azioni">
-                <button class="btn-accetta" id="btnAccetta">Accetta</button>
-                <button class="btn-rifiuta" id="btnRifiuta">Rifiuta</button>
+                <button class="btn-accetta" id="btnAccetta">
+                    Accetta proposta
+                </button>
+                <button class="btn-rifiuta" id="btnRifiuta">
+                    Rifiuta
+                </button>
             </div>
+
         </div>
     `;
 
@@ -107,13 +146,17 @@ function renderizzaStorico(richieste) {
             <div class="storico-card stato-${r.stato}">
                 <div class="storico-data">${data}</div>
                 <span class="storico-stato">${stato}</span>
-                <div style="color:#ddd; font-size:0.85rem; margin-top:8px;">${nomiServizi}</div>
+                <div class="storico-servizi">
+                    ${nomiServizi}
+                </div>
             </div>
         `;
     }).join('');
-    }
-// Stato reale del percorso: se è ancora 'attivo' ma la data è passata, lo trattiamo come
-// chiuso (completato se tutto usato, altrimenti scaduto), come farà il gestionale
+}
+
+// Stato reale del percorso: se è ancora 'attivo' ma la data è passata,
+// lo trattiamo come chiuso (completato se tutto usato, altrimenti scaduto).
+
 function statoEffettivo(percorso, oggi) {
     if (percorso.stato !== 'attivo') return percorso.stato;
 
@@ -151,6 +194,7 @@ async function caricaPercorsoAttivo(userId) {
     // In basso: gli scaduti, che passiamo allo storico
     return conStato.filter(x => x.stato === 'scaduto').map(x => x.p);
 }
+
 async function caricaStoricoPercorsi(userId, percorsiScaduti = []) {
     const { data: storico, error } = await _supabase
         .from('storico_percorsi')
@@ -202,18 +246,25 @@ function renderizzaStoricoPercorsi(storico, percorsiScaduti = []) {
         const dataInizio = p.data_inizio ? new Date(p.data_inizio).toLocaleDateString('it-IT') : '-';
         const dataFine = p.data_fine ? new Date(p.data_fine).toLocaleDateString('it-IT') : '-';
         const esito = etichette[p.esito] || p.esito;
-        const coloreEsito = p.esito === 'completato' ? '#4caf50' : '#ff4444';
+        const completato = p.esito === 'completato';
 
         return `
-            <div class="storico-card" style="border-left-color:${coloreEsito};">
-                <div class="storico-data">${dataInizio} - ${dataFine}</div>
-                <span class="storico-stato" style="color:${coloreEsito};">${esito}</span>
-                <div style="color:#ddd; font-size:0.85rem; margin-top:8px;">${p.riepilogo_servizi ?? ''}</div>
+            <div class="storico-card storico-percorso-card ${completato ? 'esito-completato' : 'esito-scaduto'}">
+                <div class="storico-data">
+                    ${dataInizio}
+                    <span class="storico-separatore">→</span>
+                    ${dataFine}
+                </div>
+
+                <span class="storico-stato">${esito}</span>
+
+                <div class="storico-servizi">
+                    ${p.riepilogo_servizi ?? ''}
+                </div>
             </div>
         `;
     }).join('');
 }
-
 
 function renderizzaPercorsoAttivo(percorso) {
     const container = document.getElementById('percorso-attivo-container');
@@ -227,8 +278,10 @@ function renderizzaPercorsoAttivo(percorso) {
     const tuttoPrenotato = servizi.length > 0 &&
         servizi.every(s => s.quantita_usata >= s.quantita_totale);
 
-    // Il gestionale chiude i percorsi solo quando viene aperto: se la data è già passata
-    // ma lo stato è ancora 'attivo', la card si comporta come se fosse già chiuso
+    // Il gestionale chiude i percorsi solo quando viene aperto:
+    // se la data è già passata ma lo stato è ancora 'attivo',
+    // la card si comporta come se fosse già chiuso.
+
     const oggi = new Date();
     oggi.setHours(0, 0, 0, 0);
     const fineValidita = percorso.data_scadenza ? new Date(percorso.data_scadenza) : null;
@@ -238,33 +291,145 @@ function renderizzaPercorsoAttivo(percorso) {
     const completato = percorso.stato === 'completato' || (scadutoPerData && tuttoPrenotato);
     const sedutePrenotate = percorso.stato === 'attivo' && !scadutoPerData && tuttoPrenotato;
 
-    let colore = '';   // vuoto = colore standard (oro)
+    let colore = '';
     let titolo = 'Il Tuo Percorso Attivo';
-    if (scaduto)              { colore = '#ff4444'; titolo = 'Percorso Scaduto'; }
-    else if (completato)      { colore = '#4caf50'; titolo = 'Percorso Completato'; }
-    else if (sedutePrenotate) { colore = '#4caf50'; titolo = 'Tutte le sedute prenotate'; }
+
+    if (scaduto) {
+        colore = '#ff4444';
+        titolo = 'Percorso Scaduto';
+    } else if (completato) {
+        colore = '#4caf50';
+        titolo = 'Percorso Completato';
+    } else if (sedutePrenotate) {
+        colore = '#4caf50';
+        titolo = 'Tutte le sedute prenotate';
+    }
 
     const dataScadenza = percorso.data_scadenza
         ? new Date(percorso.data_scadenza).toLocaleDateString('it-IT')
         : '-';
 
+
+    // Il numero delle sedute corrisponde esclusivamente alle pieghe.
+    const servizioPiega = servizi.find(s =>
+        (s.nome_servizio || '').toLowerCase().includes('piega')
+    );
+
+    const totaleSedute = servizioPiega
+        ? Number(servizioPiega.quantita_totale) || 0
+        : 0;
+
+    const usateSedute = servizioPiega
+        ? Number(servizioPiega.quantita_usata) || 0
+        : 0;
+
+    const disponibiliTotali = Math.max(0, totaleSedute - usateSedute);
+
+    const percentuale = totaleSedute > 0
+        ? Math.min(100, (usateSedute / totaleSedute) * 100)
+        : 0;
+
     const listaServizi = servizi.map(s => {
         const disponibili = s.quantita_totale - s.quantita_usata;
+
+        const percentualeServizio = Number(s.quantita_totale) > 0
+            ? Math.min(100, (Number(s.quantita_usata) / Number(s.quantita_totale)) * 100)
+            : 0;
+
         return `
-            <li>
-                <span>${s.nome_servizio}</span>
-                <span style="color:${colore || 'var(--gold)'};">${disponibili} disponibili su ${s.quantita_totale}</span>
+            <li class="percorso-servizio">
+
+                <div class="servizio-info">
+                    <span class="servizio-nome">${s.nome_servizio}</span>
+                    <span class="percorso-disponibilita">
+                        ${disponibili} disponibili su ${s.quantita_totale}
+                    </span>
+                </div>
+
+                <div class="servizio-progress">
+                    <div style="width:${percentualeServizio}%"></div>
+                </div>
+
             </li>
         `;
     }).join('');
 
+    const statoClasse = scaduto
+        ? 'scaduto'
+        : (completato || sedutePrenotate ? 'completato' : 'attivo');
+
+    const descrizione = scaduto
+        ? 'Il periodo di validità è terminato'
+        : (completato
+            ? 'Hai completato il tuo percorso'
+            : (sedutePrenotate
+                ? 'Hai utilizzato tutte le disponibilità'
+                : 'La tua esperienza Enjoy è in corso'));
+
     container.innerHTML = `
-        <div class="proposta-card" style="${colore ? `border-color:${colore};` : ''}">
-            <span class="proposta-titolo" style="${colore ? `color:${colore};` : ''}">${titolo}</span>
-            <p style="color:#888; font-size:0.8rem; margin-bottom:15px;">Scadenza: ${dataScadenza}</p>
-            <ul class="proposta-servizi" style="list-style:none; padding:0;">
+        <div class="percorso-attivo-card stato-${statoClasse}">
+
+            <div class="percorso-card-header">
+
+                <div>
+                    <span class="proposta-titolo">
+                        <span class="proposta-punto"></span>
+                        IL TUO SPAZIO BENESSERE
+                    </span>
+
+                    <h2>${titolo}</h2>
+                    <p>${descrizione}</p>
+                </div>
+
+                <span class="percorso-status-indicator"></span>
+
+            </div>
+
+            <div class="percorso-riepilogo">
+
+                <div class="riepilogo-box">
+                    <span>SEDUTE TOTALI</span>
+                    <strong>${totaleSedute}</strong>
+                </div>
+
+                <div class="riepilogo-box">
+                    <span>GIÀ UTILIZZATE</span>
+                    <strong>${usateSedute}</strong>
+                </div>
+
+                <div class="riepilogo-box">
+                    <span>DISPONIBILI</span>
+                    <strong>${disponibiliTotali}</strong>
+                </div>
+
+            </div>
+
+            <div class="percorso-progress">
+
+                <div class="progress-label">
+                    <span>AVANZAMENTO DEL PERCORSO</span>
+                    <strong>${Math.round(percentuale)}%</strong>
+                </div>
+
+                <div class="progress-track">
+                    <div style="width:${percentuale}%"></div>
+                </div>
+
+            </div>
+
+            <div class="percorso-servizi-heading">
+                I TUOI TRATTAMENTI
+            </div>
+
+            <ul class="percorso-servizi-list">
                 ${listaServizi}
             </ul>
+
+            <div class="percorso-scadenza">
+                <span>VALIDITÀ DEL PERCORSO</span>
+                <strong>${dataScadenza}</strong>
+            </div>
+
         </div>
     `;
 }

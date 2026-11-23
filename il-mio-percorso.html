@@ -1,133 +1,478 @@
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="apple-touch-icon" href="icon-192.png">
-    <title>Il Mio Percorso - Hair Spa</title>
+
+    <title>Il Mio Percorso - Enjoy Hair Spa</title>
+
     <link rel="stylesheet" href="dark-luxury.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+
     <style>
+        :root {
+            --lux-gold: #c9ad78;
+            --lux-gold-light: #e2cca0;
+            --lux-ivory: #eee9df;
+            --lux-muted: #a39c90;
+            --lux-bg: #10100f;
+            --lux-card: rgba(29, 28, 25, 0.94);
+            --lux-border: rgba(201, 173, 120, 0.20);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body.dark-page {
-            background: url('lista.png') no-repeat center center fixed;
-            background-size: cover;
+            background:
+                linear-gradient(rgba(12,12,11,.88), rgba(12,12,11,.94)),
+                url('lista.png') center center / cover fixed;
+
             margin: 0;
             padding: 0;
             min-height: 100vh;
-            position: relative;
+            color: var(--lux-ivory);
         }
+
         body.dark-page::before {
             content: "";
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.82);
+            inset: 0;
+            background:
+                radial-gradient(
+                    ellipse at 50% 0%,
+                    rgba(201,173,120,.09),
+                    transparent 55%
+                );
+            pointer-events: none;
             z-index: 0;
         }
+
         .form-container {
             position: relative;
             z-index: 1;
-            padding: 25px;
-            max-width: 500px;
+            width: 100%;
+            max-width: 680px;
             margin: 0 auto;
+            padding: 25px 25px 100px;
         }
+
+        /* NAVIGAZIONE */
+
+        .top-nav {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 48px;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            padding: 10px 17px;
+            border: 1px solid var(--lux-border);
+            border-radius: 30px;
+            color: var(--lux-gold-light);
+            text-decoration: none;
+            font-size: .72rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            transition: .3s ease;
+        }
+
+        .btn-back:hover {
+            background: rgba(201,173,120,.10);
+            border-color: var(--lux-gold);
+        }
+
+        /* TESTATA */
+
+        .page-title {
+            color: var(--lux-ivory);
+            font-size: clamp(1.65rem, 5vw, 2.25rem);
+            font-weight: 300 !important;
+            letter-spacing: 5px !important;
+            text-align: center;
+            margin: 0 0 12px !important;
+        }
+
+        .intro-subtitle {
+            color: var(--lux-muted);
+            text-align: center;
+            font-size: .83rem;
+            font-weight: 300;
+            letter-spacing: .7px;
+            line-height: 1.7;
+            margin: 0 auto 42px;
+        }
+
+        .gold-divider {
+            width: 48px;
+            height: 1px;
+            background: var(--lux-gold);
+            margin: 22px auto;
+            opacity: .8;
+        }
+
+        /* SEZIONI */
+
+        .section-label {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: var(--lux-gold-light);
+            font-size: .70rem !important;
+            letter-spacing: 2.5px !important;
+            font-weight: 500;
+            margin: 42px 0 20px !important;
+        }
+
+        .section-label::after {
+            content: "";
+            height: 1px;
+            flex: 1;
+            background: linear-gradient(
+                to right,
+                var(--lux-border),
+                transparent
+            );
+        }
+
+        /* CONTENITORI */
+
+        #proposta-container,
+        #percorso-attivo-container,
+        #storico-container,
+        #storico-percorsi-container {
+            width: 100%;
+        }
+
+        /* PROPOSTA */
+
         .proposta-card {
-            background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
-            border: 1px solid var(--gold);
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(
+                145deg,
+                #292721,
+                #191916 75%
+            );
+            border: 1px solid rgba(201,173,120,.38);
+            border-radius: 17px;
+            padding: 28px;
+            margin: 0 0 30px;
+            box-shadow: 0 15px 40px rgba(0,0,0,.28);
         }
+
+        .proposta-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 28px;
+            right: 28px;
+            height: 1px;
+            background: linear-gradient(
+                to right,
+                transparent,
+                var(--lux-gold),
+                transparent
+            );
+            opacity: .65;
+        }
+
         .proposta-titolo {
-            color: var(--gold);
-            font-size: 0.7rem;
+            display: block;
+            color: var(--lux-gold-light);
+            font-size: .69rem;
             letter-spacing: 3px;
             text-transform: uppercase;
-            display: block;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
+
         .proposta-prezzo {
-            font-size: 2rem;
             color: #fff;
-            font-weight: 200;
-            margin-bottom: 15px;
+            font-size: 2.35rem;
+            font-weight: 300;
+            margin-bottom: 20px;
         }
+
         .proposta-servizi {
             list-style: none;
             padding: 0;
-            margin: 15px 0;
+            margin: 20px 0;
         }
+
         .proposta-servizi li {
-            color: #ccc;
-            font-size: 0.85rem;
-            padding: 6px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: #d3cec3;
+            font-size: .88rem;
+            padding: 12px 5px;
+            border-bottom: 1px solid rgba(255,255,255,.07);
+            line-height: 1.5;
         }
+
         .proposta-azioni {
             display: flex;
             gap: 12px;
-            margin-top: 20px;
+            margin-top: 25px;
         }
-        .btn-accetta, .btn-rifiuta {
+
+        .btn-accetta,
+        .btn-rifiuta {
             flex: 1;
-            padding: 14px;
-            border-radius: 8px;
-            border: none;
-            font-size: 0.75rem;
-            letter-spacing: 2px;
+            min-height: 48px;
+            padding: 13px;
+            border-radius: 7px;
+            font-size: .70rem;
+            letter-spacing: 1.6px;
             text-transform: uppercase;
             cursor: pointer;
+            transition: .25s ease;
         }
-        .btn-accetta { background: var(--gold); color: #000; font-weight: bold; }
-        .btn-rifiuta { background: transparent; color: #888; border: 1px solid #444; }
+
+        .btn-accetta {
+            background: linear-gradient(
+                135deg,
+                #dfc493,
+                #b99a65
+            );
+            color: #17140f;
+            font-weight: 600;
+            border: none;
+        }
+
+        .btn-accetta:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+        }
+
+        .btn-rifiuta {
+            background: transparent;
+            color: #b7afa2;
+            border: 1px solid rgba(255,255,255,.18);
+        }
+
+        .btn-rifiuta:hover {
+            border-color: #b99a65;
+            color: var(--lux-gold-light);
+        }
+
+        /* STORICO RICHIESTE */
 
         .storico-card {
-            background: rgba(255,255,255,0.03);
-            border-left: 3px solid #555;
-            border-radius: 8px;
-            padding: 18px;
-            margin-bottom: 15px;
+            position: relative;
+            background: linear-gradient(
+                120deg,
+                rgba(35,34,30,.96),
+                rgba(23,23,21,.96)
+            );
+            border: 1px solid rgba(255,255,255,.065);
+            border-left: 3px solid #777;
+            border-radius: 10px;
+            padding: 20px 22px;
+            margin-bottom: 13px;
+            transition: .25s ease;
         }
-        .storico-card.stato-in_attesa { border-left-color: #888; }
-        .storico-card.stato-proposta_inviata { border-left-color: var(--gold); }
-        .storico-card.stato-accettato { border-left-color: #4caf50; }
-        .storico-card.stato-rifiutato { border-left-color: #ff4444; opacity: 0.6; }
+
+        .storico-card:hover {
+            border-color: var(--lux-border);
+            transform: translateY(-2px);
+        }
+
+        .storico-card.stato-in_attesa {
+            border-left-color: #aaa18e;
+        }
+
+        .storico-card.stato-proposta_inviata {
+            border-left-color: var(--lux-gold);
+        }
+
+        .storico-card.stato-accettato {
+            border-left-color: #75a987;
+        }
+
+        .storico-card.stato-rifiutato {
+            border-left-color: #b66e68;
+            opacity: .65;
+        }
+
         .storico-stato {
-            font-size: 0.65rem;
+            display: inline-block;
+            color: var(--lux-gold-light);
+            font-size: .67rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--gold);
-        }
-        .storico-data {
-            font-size: 0.75rem;
-            color: #888;
+            letter-spacing: 1.5px;
             margin-bottom: 8px;
         }
+
+        .storico-data {
+            color: var(--lux-muted);
+            font-size: .77rem;
+            margin-bottom: 10px;
+        }
+
+        /* PERCORSO ATTIVO E STORICO PERCORSI */
+
+        #percorso-attivo-container > *,
+        #storico-percorsi-container > * {
+            border-radius: 12px;
+        }
+
+        /* TESTI E CONTENUTI INTERNI */
+
+        .form-container p {
+            line-height: 1.65;
+        }
+
+        .form-container button {
+            transition: .25s ease;
+        }
+
+        .form-container button:focus-visible,
+        .form-container a:focus-visible {
+            outline: 2px solid var(--lux-gold);
+            outline-offset: 4px;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--lux-muted);
+            font-size: .86rem;
+            font-style: italic;
+            padding: 30px 15px;
+            background: rgba(255,255,255,.025);
+            border: 1px dashed rgba(201,173,120,.17);
+            border-radius: 12px;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 600px) {
+
+            .form-container {
+                padding: 18px 16px 100px;
+            }
+
+            .top-nav {
+                margin-bottom: 38px;
+            }
+
+            .page-title {
+                letter-spacing: 3.5px !important;
+            }
+
+            .intro-subtitle {
+                font-size: .78rem;
+                margin-bottom: 32px;
+            }
+
+            .proposta-card {
+                padding: 23px 19px;
+                border-radius: 13px;
+            }
+
+            .proposta-prezzo {
+                font-size: 2rem;
+            }
+
+            .proposta-azioni {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn-accetta,
+            .btn-rifiuta {
+                min-height: 49px;
+            }
+
+            .storico-card {
+                padding: 17px;
+            }
+
+            .section-label {
+                margin-top: 35px !important;
+                font-size: .65rem !important;
+                letter-spacing: 2px !important;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                transition: none !important;
+            }
+        }
+
+                @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                transition: none !important;
+            }
+        }
+
+        /* QUI INCOLLA TUTTO IL NUOVO CSS */
+
     </style>
 </head>
+
+    </style>
+</head>
+
 <body class="dark-page">
+
     <div class="form-container">
-        <nav class="top-nav" style="position: relative; padding: 0; display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-            <a href="area-riservata.html" class="btn-back">Indietro</a>
+
+        <nav class="top-nav">
+            <a href="area-riservata.html" class="btn-back">
+                ← Indietro
+            </a>
         </nav>
 
-        <h1 class="page-title" style="margin-bottom: 25px; font-weight: 200; letter-spacing: 6px; text-align:center;">IL MIO PERCORSO</h1>
-<div id="proposta-container"></div>
+        <header>
+            <h1 class="page-title">IL MIO PERCORSO</h1>
 
-<div id="percorso-attivo-container"></div>
+            <div class="gold-divider"></div>
 
-<p class="section-label" style="font-size: 0.7rem; letter-spacing: 2px; margin-top: 30px;">STORICO RICHIESTE</p>
+            <p class="intro-subtitle">
+                La tua esperienza di bellezza,<br>
+                passo dopo passo.
+            </p>
+        </header>
+
+        <!-- PROPOSTA RICEVUTA -->
+        <div id="proposta-container"></div>
+
+        <!-- PERCORSO ATTIVO -->
+        <div id="percorso-attivo-container"></div>
+
+        <!-- STORICO RICHIESTE -->
+        <p class="section-label">STORICO RICHIESTE</p>
+
         <div id="storico-container">
-            <div class="empty-state" style="text-align:center; opacity:0.5; font-style:italic; padding: 30px 0;">Caricamento...</div>
+            <div class="empty-state">
+                Caricamento...
+            </div>
         </div>
-        <p class="section-label" style="font-size: 0.7rem; letter-spacing: 2px; margin-top: 30px;">STORICO PERCORSI</p>
-<div id="storico-percorsi-container"></div>
+
+        <!-- STORICO PERCORSI -->
+        <p class="section-label">STORICO PERCORSI</p>
+
+        <div id="storico-percorsi-container"></div>
+
     </div>
 
     <script src="config.js"></script>
     <script src="il-mio-percorso.js"></script>
     <script src="bottom-nav.js"></script>
+
 </body>
 </html>
