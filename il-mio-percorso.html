@@ -361,7 +361,7 @@
             }
 
             .top-nav {
-                margin-bottom: 38px;
+                margin-bottom: 58px;
             }
 
             .page-title {
@@ -403,14 +403,6 @@
             }
         }
 
-        @media (prefers-reduced-motion: reduce) {
-            *,
-            *::before,
-            *::after {
-                transition: none !important;
-            }
-        }
-
                 @media (prefers-reduced-motion: reduce) {
             *,
             *::before,
@@ -419,13 +411,197 @@
             }
         }
 
-        /* QUI INCOLLA TUTTO IL NUOVO CSS */
+        /* RIEPILOGO PERCORSO ATTIVO */
+
+.percorso-attivo-card {
+    display: block;
+    width: 100%;
+    padding: 25px;
+    background: linear-gradient(145deg, #292721, #191916 75%);
+    border: 1px solid var(--lux-border);
+    border-radius: 15px;
+}
+
+.percorso-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.percorso-riepilogo {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    width: 100%;
+    margin: 22px 0;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.riepilogo-box {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    padding: 15px 8px;
+    text-align: center;
+    background: rgba(255,255,255,.035);
+    border: 1px solid var(--lux-border);
+    border-radius: 9px;
+}
+
+.riepilogo-box span {
+    color: var(--lux-muted);
+    font-size: .62rem;
+    letter-spacing: 1px;
+    line-height: 1.5;
+}
+
+.riepilogo-box strong {
+    display: block;
+    margin-top: 7px;
+    color: var(--lux-gold-light);
+    font-size: 1.5rem;
+}
+
+.percorso-progress {
+    display: block !important;
+    width: 100%;
+    margin: 22px 0;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    color: var(--lux-muted);
+    font-size: .68rem;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+.progress-label strong {
+    color: var(--lux-gold-light);
+}
+
+.progress-track {
+    width: 100%;
+    height: 5px;
+    overflow: hidden;
+    background: rgba(255,255,255,.10);
+    border-radius: 10px;
+}
+
+.progress-track > div {
+    height: 100%;
+    background: var(--lux-gold);
+    border-radius: 10px;
+}
+
+.percorso-servizi-heading {
+    color: var(--lux-gold-light);
+    font-size: .70rem;
+    letter-spacing: 2px;
+    margin: 25px 0 14px;
+}
+
+.percorso-servizi-list {
+    display: block !important;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.percorso-servizio {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 10px;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.servizio-info {
+    min-width: 0;
+}
+
+.servizio-nome {
+    color: var(--lux-ivory);
+    font-size: .86rem;
+}
+
+.percorso-disponibilita {
+    color: var(--lux-gold-light);
+    font-size: .78rem;
+    text-align: right;
+}
+
+.percorso-scadenza {
+    margin-top: 22px;
+    padding-top: 16px;
+    border-top: 1px solid var(--lux-border);
+    color: var(--lux-muted);
+    text-align: center;
+    font-size: .75rem;
+    letter-spacing: 1px;
+}
+
+/* ADATTAMENTO CELLULARE */
+
+@media (max-width: 600px) {
+
+    .form-container {
+        padding: 18px 16px 110px;
+    }
+
+    .page-title {
+        margin-top: 0 !important;
+    }
+
+    .percorso-attivo-card {
+        padding: 19px 14px;
+    }
+
+    .percorso-riepilogo {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+    }
+
+    .riepilogo-box {
+        padding: 12px 4px;
+    }
+
+    .riepilogo-box span {
+        font-size: .53rem;
+        letter-spacing: .5px;
+    }
+
+    .riepilogo-box strong {
+        font-size: 1.25rem;
+    }
+
+    .percorso-servizio {
+        padding: 13px 5px;
+    }
+
+    .servizio-nome {
+        font-size: .78rem;
+    }
+
+    .percorso-disponibilita {
+        font-size: .70rem;
+        white-space: nowrap;
+    }
+}
 
     </style>
 </head>
 
-    </style>
-</head>
 
 <body class="dark-page">
 
