@@ -402,7 +402,8 @@ body {
     padding: 5px 0;
     display: inline-block;
 }
-/* --- BOTTOM NAVIGATION FISSA --- */
+
+/* --- BOTTOM NAVIGATION LUXURY ENJOY --- */
 
 #bottom-nav {
     position: fixed !important;
@@ -410,86 +411,113 @@ body {
     left: 0 !important;
     right: 0 !important;
     width: 100% !important;
-    height: 68px;
-    min-height: 68px;
-    padding: 0 8px env(safe-area-inset-bottom, 0px);
-    background: rgba(10, 10, 10, 0.96);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border-top: 1px solid rgba(197, 160, 89, 0.25);
+    min-height: 72px;
+    padding: 7px 8px env(safe-area-inset-bottom, 0px);
     display: flex;
     justify-content: space-around;
     align-items: center;
+    background: rgba(16, 15, 13, 0.97);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-top: 1px solid rgba(201, 173, 120, 0.25);
+    box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.35);
     z-index: 99999;
     transform: none !important;
 }
 
 body.has-bottom-nav {
-    padding-bottom: 85px !important;
+    padding-bottom: 90px !important;
 }
 
 .bn-item {
+    position: relative;
     flex: 1;
     min-width: 0;
+    height: 58px;
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     gap: 5px;
     text-decoration: none;
-    color: #777;
-    font-size: 0.6rem;
-    letter-spacing: 0.5px;
+    color: #898276;
+    font-size: 0.59rem;
+    font-weight: 400;
+    letter-spacing: 1px;
     text-transform: uppercase;
-    transition: color 0.2s ease;
+    transition: color .3s ease;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .bn-icon {
-    font-size: 1.2rem;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.55rem;
     line-height: 1;
+    color: inherit;
+    transition: transform .3s ease, color .3s ease;
+}
+
+.bn-label {
+    white-space: nowrap;
+    transition: color .3s ease;
+}
+
+.bn-indicator {
+    position: absolute;
+    bottom: 0;
+    width: 20px;
+    height: 2px;
+    border-radius: 5px;
+    background: transparent;
+    transition: background .3s ease, width .3s ease;
 }
 
 .bn-item.bn-active {
-    color: var(--gold);
+    color: #dfc797;
+}
+
+.bn-item.bn-active .bn-icon {
+    transform: translateY(-2px);
+}
+
+.bn-item.bn-active .bn-indicator {
+    background: #c9ad78;
+    width: 28px;
+    box-shadow: 0 0 8px rgba(201, 173, 120, .4);
+}
+
+.bn-item:active .bn-icon {
+    transform: scale(.92);
 }
 
 .bn-badge {
-  position: absolute;
-  top: -2px;
-  right: -6px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--gold);
-  box-shadow: 0 0 4px rgba(197, 160, 89, 0.6);
+    position: absolute;
+    top: -3px;
+    right: -7px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #dfc797;
+    box-shadow: 0 0 7px rgba(201, 173, 120, .65);
+    display: none;
 }
 
-.bn-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  text-decoration: none;
-  color: #777;
-  font-size: 0.6rem;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  transition: color 0.2s ease;
-}
+@media (max-width: 600px) {
+    #bottom-nav {
+        min-height: 70px;
+    }
 
-.bn-icon {
-  font-size: 1.2rem;
-  line-height: 1;
-}
+    .bn-item {
+        font-size: 0.55rem;
+        letter-spacing: .6px;
+    }
 
-.bn-item.bn-active {
-  color: var(--gold);
-}
-
-/* Evita che il contenuto finisca sotto la barra */
-body.has-bottom-nav {
-  padding-bottom: 80px;
+    .bn-icon {
+        font-size: 1.45rem;
+    }
 }
 
 .account-row {
