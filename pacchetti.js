@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- CARICAMENTO PACCHETTI ATTIVI ---
     const { data: righe, error } = await _supabase
         .from('pacchetti_preimpostati')
-        .select('id, nome_pacchetto, descrizione, prezzo, validita_giorni, immagine_url, ordine, pacchetti_preimpostati_servizi(nome_servizio, servizio_id, quantita)')
+        .select('id, cliente_id,nome_pacchetto, descrizione, prezzo, validita_giorni, immagine_url, ordine, pacchetti_preimpostati_servizi(nome_servizio, servizio_id, quantita)')
         .eq('attivo', true)
         .order('ordine', { ascending: true });
 
@@ -110,6 +110,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         const body = el('div', 'pack-body');
+        if (p.cliente_id) {
+    body.appendChild(el('div', 'pack-badge', '★ Pensato per te'));
+}
         body.appendChild(el('h3', 'pack-name', p.nome_pacchetto));
 
         const riga = el('div');
